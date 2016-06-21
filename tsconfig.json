@@ -1,0 +1,16 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "module": "system",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outFile": "kratos.js",
+        "sourceMap": true,
+        "watch": true,
+        "target": "es5"
+    },
+    "files": [
+        "kratos.ts"
+    ]
+}
