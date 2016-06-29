@@ -1,4 +1,13 @@
 export module core {
+    export class version {
+        public static major:number = 0;
+        public static minor:number = 0;
+        public static patch:number = 0;
+        public static toString() {
+            return [this.major, this.minor, this.patch].join('.');
+        }
+    }
+
     export class Application {
         private element:HTMLElement
         public controls:core.Collection
@@ -24,6 +33,7 @@ export module core {
         public $defaultApplication:core.Application
         public constructor(handler:any, appInstance:core.Application) {
             this.collectionHandler = handler;
+            this.items = [];
             this.$defaultApplication = appInstance;
         }
         public add(item:any) {
@@ -61,12 +71,17 @@ export module core {
         private $parent:core.UIControl
         private $context:CanvasRenderingContext2D
         public controls:core.Collection
-        private $height:number = 128;
-        private $width:number = 128;
-        private $injected:boolean = false;
-        private $backgroundColor:string = '#dedede';
-        private $foreColor:string = '#000';
+        private $height:number = 128
+        private $width:number = 128
+        private $injected:boolean = false
+        private $backgroundColor:string = '#dedede'
+        private $foreColor:string = '#000'
         
+        public constructor(owner:core.Application) {
+            this.owner = owner;
+            this.$context = owner.context;
+            this.controls = new core.Collection(this, owner);
+        }
         get context():CanvasRenderingContext2D {
             return this.$context;
         }
@@ -125,11 +140,6 @@ export module core {
         }
         get parent():core.UIControl {
             return this.$parent;
-        }
-        public constructor(owner:core.Application) {
-            this.owner = owner;
-            this.$context = owner.context;
-            this.controls = new core.Collection(this, owner);
         }
         
         public redrawContext(force:boolean=false) {

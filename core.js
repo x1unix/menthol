@@ -1,6 +1,18 @@
 "use strict";
 var core;
 (function (core) {
+    var version = (function () {
+        function version() {
+        }
+        version.toString = function () {
+            return [this.major, this.minor, this.patch].join('.');
+        };
+        version.major = 0;
+        version.minor = 0;
+        version.patch = 0;
+        return version;
+    }());
+    core.version = version;
     var Application = (function () {
         function Application(handler) {
             this.element = handler;
@@ -23,6 +35,7 @@ var core;
     var Collection = (function () {
         function Collection(handler, appInstance) {
             this.collectionHandler = handler;
+            this.items = [];
             this.$defaultApplication = appInstance;
         }
         Collection.prototype.add = function (item) {

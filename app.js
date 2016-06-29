@@ -2,6 +2,18 @@
 "use strict";
 var core;
 (function (core) {
+    var version = (function () {
+        function version() {
+        }
+        version.toString = function () {
+            return [this.major, this.minor, this.patch].join('.');
+        };
+        version.major = 0;
+        version.minor = 0;
+        version.patch = 0;
+        return version;
+    }());
+    core.version = version;
     var Application = (function () {
         function Application(handler) {
             this.element = handler;
@@ -24,6 +36,7 @@ var core;
     var Collection = (function () {
         function Collection(handler, appInstance) {
             this.collectionHandler = handler;
+            this.items = [];
             this.$defaultApplication = appInstance;
         }
         Collection.prototype.add = function (item) {
@@ -170,24 +183,10 @@ var core;
 })(core = exports.core || (exports.core = {}));
 
 },{}],2:[function(require,module,exports){
-"use strict";
-var core_1 = require('./core');
-var ui_1 = require('./ui');
-var kratos = (function () {
-    function kratos() {
-    }
-    kratos.UI = ui_1.ui;
-    kratos.core = core_1.core;
-    return kratos;
-}());
-exports.kratos = kratos;
-console.log(ui_1.ui);
-console.warn(core_1.core);
+window.kratos = require('./core.js').core;
+window.kratos.ui = require('./ui.js').ui;
 
-},{"./core":1,"./ui":4}],3:[function(require,module,exports){
-window.kratos = require('./kratos.js');
-
-},{"./kratos.js":2}],4:[function(require,module,exports){
+},{"./core.js":1,"./ui.js":3}],3:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -234,4 +233,4 @@ var ui;
     ui.Label = Label;
 })(ui = exports.ui || (exports.ui = {}));
 
-},{"./core":1}]},{},[3]);
+},{"./core":1}]},{},[2]);
