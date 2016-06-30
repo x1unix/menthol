@@ -136,6 +136,7 @@ export module core {
                 this.$listeners[ eventName ] = new core.EventListenersCollection(this.$owner, eventName);
             }
             this.$listeners[ eventName ].addEventListener(listener);
+            return this.$owner;
         }
 
         public off(eventName:string, listener:Function) {

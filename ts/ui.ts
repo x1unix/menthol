@@ -8,6 +8,13 @@ export module ui {
             return this.$text;
         }
         set text(newStr:string) {
+            this.$emit('propertyChange',
+                new core.PropertyChangedEvent(
+                    this,
+                    'text',
+                    this.$text,
+                    newStr
+            ));
             this.$text = newStr;
             this.redrawContext();
         }
@@ -16,6 +23,13 @@ export module ui {
             return this.$align;
         }
         set textAlign(newVal:string) {
+            this.$emit('propertyChange',
+                new core.PropertyChangedEvent(
+                    this,
+                    'textAlign',
+                    this.$align,
+                    newVal
+            ));
             this.$align = newVal;
             this.redrawContext();
         }

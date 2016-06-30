@@ -11,10 +11,14 @@
   <script>
     var app = new kratos.Application( document.getElementById('app') );
     var label = new kratos.ui.Label( app );
-    label.text = 'Hello World!';
+    
     label.on('render', function(data) {
       console.info('label was rendered! ',data);
     });
+    label.on('propertyChange', function(data) {
+      console.info('label prop change! ',data);
+    });
+    label.text = 'Hello World!';
     app.controls.add( label );
   </script>
   

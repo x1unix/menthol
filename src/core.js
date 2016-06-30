@@ -148,6 +148,7 @@ var core;
                 this.$listeners[eventName] = new core.EventListenersCollection(this.$owner, eventName);
             }
             this.$listeners[eventName].addEventListener(listener);
+            return this.$owner;
         };
         EventGenerator.prototype.off = function (eventName, listener) {
             if (!this.hasListeners(eventName))
