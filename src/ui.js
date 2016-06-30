@@ -36,7 +36,7 @@ var ui;
             enumerable: true,
             configurable: true
         });
-        Label.prototype.render = function () {
+        Label.prototype._render = function () {
             this.context.fillText(this.text, this.height, this.width);
         };
         return Label;

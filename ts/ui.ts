@@ -20,7 +20,7 @@ export module ui {
             this.redrawContext();
         }
 
-        public render() {
+        public _render() {
             this.context.fillText(this.text, this.height, this.width);
         }
     }    

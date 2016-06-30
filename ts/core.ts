@@ -8,6 +8,56 @@ export module core {
         }
     }
 
+    export class Event {
+        
+        private _target : EventEmitter;
+        public get target() : EventEmitter {
+            return this._target;
+        }
+        public set target(v : EventEmitter) {
+            this._target = v;
+        }
+        
+        private _args : Object;
+        public get args() : Object {
+            return this._args;
+        }
+        public set args(v : Object) {
+            this._args = v;
+        }
+
+        public constructor(target:EventEmitter, args:Object) {
+            this._args = args;
+            this._target = target;
+        }
+        
+        
+    }
+
+    export class UIEvent  extends Event {
+        public constructor(target:EventEmitter, args:Object) {
+            super(target, args);
+        }
+    }
+
+    export class PropertyChangedEvent extends UIEvent {
+        public constructor(target:EventEmitter, propName:string, oldValue:any, newValue:any) {
+            super(target, {
+                propertyName: propName,
+                oldValue: oldValue,
+                newValue: newValue
+            });
+        }
+    }
+
+    export class CollectionEvent extends Event {
+        public constructor(target:EventEmitter, item:core.UIControl) {
+            super(target, {
+                item: item
+            });
+        }
+    }
+
     export class EventEmitter {
         public on(eventName:string, listener:Function) {}
         public off(eventName:string, listener:Function) {}
@@ -105,6 +155,7 @@ export module core {
             this.canvas = document.createElement('canvas');
             this.element.appendChild(this.canvas);
             this.controls = new core.Collection(null, this);
+            this.$emit('drawStart', new UIEvent(this, {}));
         }
     }
 
@@ -123,11 +174,13 @@ export module core {
         public add(item:any) {
             item.$$inject(this.collectionHandler);
             this.items.push(item);
+            this.$emit('elementInserted', new CollectionEvent(this,item) );
         }
         private remove(item:any) {
             var i:number = this.items.indexOf(item);
             if( i > -1) {
                 this.items[i].dispose();
+                this.$emit('elementRemove',new CollectionEvent(this,this.items[i]));
                 this.items.splice(i,1);
             }
         }
@@ -182,6 +235,14 @@ export module core {
             return this.$backgroundColor;
         }
         set backgroundColor(newColor:string) {
+            this.$emit('propertyChange',
+                new PropertyChangedEvent(
+                    this,
+                    'backgroundColor',
+                    this.$backgroundColor,
+                    newColor
+            ));
+            
             this.$backgroundColor = newColor;
             this.redrawContext();
         }
@@ -190,6 +251,15 @@ export module core {
             return this.$foreColor;
         }
         set foreColor(newColor:string) {
+
+            this.$emit('propertyChange',
+                new PropertyChangedEvent(
+                    this,
+                    'foreColor',
+                    this.$foreColor,
+                    newColor
+            ));
+
             this.$foreColor = newColor;
             this.context.fillStyle = newColor;
             this.redrawContext();
@@ -201,6 +271,14 @@ export module core {
             return this.$height;
         }
         set height(newHeight:number) {
+            this.$emit('propertyChange',
+                new PropertyChangedEvent(
+                    this,
+                    'width',
+                    this.$height,
+                    newHeight
+            ));
+
             this.$height = newHeight;
             this.redrawContext();
         }
@@ -211,6 +289,14 @@ export module core {
             return this.$width;
         }
         set width(newWidth:number) {
+            this.$emit('propertyChange',
+                new PropertyChangedEvent(
+                    this,
+                    'width',
+                    this.$width,
+                    newWidth
+            ));
+
             this.$width = newWidth;
             this.redrawContext();
         }
@@ -221,6 +307,13 @@ export module core {
             return this.__position__;
         }
         set position(newPosition:core.Point) {
+            this.$emit('propertyChange',
+                new PropertyChangedEvent(
+                    this,
+                    'position',
+                    this.__position__,
+                    newPosition
+            ));
             this.__position__ = newPosition;
             this.redrawContext();
         }
@@ -231,20 +324,32 @@ export module core {
         public redrawContext(force:boolean=false) {
             // Do not redraw element if its not injected of force do
             if( !this.isInjected || !force ) return false;
+            this.$emit('redraw', new UIEvent(this, {'force': force}));
+
+            // Redraw self
+            this.render();
 
             // Trigger parent to redraw
             this.parent.redrawContext(force);
             return true;
         } 
-        public render() {
 
+        public _render() {}
+
+        public render() {
+            this.$emit('render', new UIEvent(this, null));
+            this._render();
+            this.$emit('rendered', new UIEvent(this, null));
         }
         public $$inject(parent:core.UIControl) {
             this.$parent = parent;
             this.$injected = true;
+
+            this.$emit('inject', new UIEvent(this, {'parent': parent}));
             this.render();
         }
         public dispose() {
+            this.$emit('dispose', new UIEvent(this, null));
             this.$injected = false;
         }
         

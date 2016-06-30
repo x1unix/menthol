@@ -18,6 +18,64 @@ var core;
         return version;
     }());
     core.version = version;
+    var Event = (function () {
+        function Event(target, args) {
+            this._args = args;
+            this._target = target;
+        }
+        Object.defineProperty(Event.prototype, "target", {
+            get: function () {
+                return this._target;
+            },
+            set: function (v) {
+                this._target = v;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Event.prototype, "args", {
+            get: function () {
+                return this._args;
+            },
+            set: function (v) {
+                this._args = v;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return Event;
+    }());
+    core.Event = Event;
+    var UIEvent = (function (_super) {
+        __extends(UIEvent, _super);
+        function UIEvent(target, args) {
+            _super.call(this, target, args);
+        }
+        return UIEvent;
+    }(Event));
+    core.UIEvent = UIEvent;
+    var PropertyChangedEvent = (function (_super) {
+        __extends(PropertyChangedEvent, _super);
+        function PropertyChangedEvent(target, propName, oldValue, newValue) {
+            _super.call(this, target, {
+                propertyName: propName,
+                oldValue: oldValue,
+                newValue: newValue
+            });
+        }
+        return PropertyChangedEvent;
+    }(UIEvent));
+    core.PropertyChangedEvent = PropertyChangedEvent;
+    var CollectionEvent = (function (_super) {
+        __extends(CollectionEvent, _super);
+        function CollectionEvent(target, item) {
+            _super.call(this, target, {
+                item: item
+            });
+        }
+        return CollectionEvent;
+    }(Event));
+    core.CollectionEvent = CollectionEvent;
     var EventEmitter = (function () {
         function EventEmitter() {
             this.$$e = new core.EventGenerator(this);
@@ -99,6 +157,7 @@ var core;
             this.canvas = document.createElement('canvas');
             this.element.appendChild(this.canvas);
             this.controls = new core.Collection(null, this);
+            this.$emit('drawStart', new UIEvent(this, {}));
         }
         Object.defineProperty(Application.prototype, "context", {
             get: function () {
@@ -123,11 +182,13 @@ var core;
         Collection.prototype.add = function (item) {
             item.$$inject(this.collectionHandler);
             this.items.push(item);
+            this.$emit('elementInserted', new CollectionEvent(this, item));
         };
         Collection.prototype.remove = function (item) {
             var i = this.items.indexOf(item);
             if (i > -1) {
                 this.items[i].dispose();
+                this.$emit('elementRemove', new CollectionEvent(this, this.items[i]));
                 this.items.splice(i, 1);
             }
         };
@@ -185,6 +246,7 @@ var core;
                 return this.$backgroundColor;
             },
             set: function (newColor) {
+                this.$emit('propertyChange', new PropertyChangedEvent(this, 'backgroundColor', this.$backgroundColor, newColor));
                 this.$backgroundColor = newColor;
                 this.redrawContext();
             },
@@ -196,6 +258,7 @@ var core;
                 return this.$foreColor;
             },
             set: function (newColor) {
+                this.$emit('propertyChange', new PropertyChangedEvent(this, 'foreColor', this.$foreColor, newColor));
                 this.$foreColor = newColor;
                 this.context.fillStyle = newColor;
                 this.redrawContext();
@@ -208,6 +271,7 @@ var core;
                 return this.$height;
             },
             set: function (newHeight) {
+                this.$emit('propertyChange', new PropertyChangedEvent(this, 'width', this.$height, newHeight));
                 this.$height = newHeight;
                 this.redrawContext();
             },
@@ -219,6 +283,7 @@ var core;
                 return this.$width;
             },
             set: function (newWidth) {
+                this.$emit('propertyChange', new PropertyChangedEvent(this, 'width', this.$width, newWidth));
                 this.$width = newWidth;
                 this.redrawContext();
             },
@@ -230,6 +295,7 @@ var core;
                 return this.__position__;
             },
             set: function (newPosition) {
+                this.$emit('propertyChange', new PropertyChangedEvent(this, 'position', this.__position__, newPosition));
                 this.__position__ = newPosition;
                 this.redrawContext();
             },
@@ -247,17 +313,25 @@ var core;
             if (force === void 0) { force = false; }
             if (!this.isInjected || !force)
                 return false;
+            this.$emit('redraw', new UIEvent(this, { 'force': force }));
+            this.render();
             this.parent.redrawContext(force);
             return true;
         };
+        UIControl.prototype._render = function () { };
         UIControl.prototype.render = function () {
+            this.$emit('render', new UIEvent(this, null));
+            this._render();
+            this.$emit('rendered', new UIEvent(this, null));
         };
         UIControl.prototype.$$inject = function (parent) {
             this.$parent = parent;
             this.$injected = true;
+            this.$emit('inject', new UIEvent(this, { 'parent': parent }));
             this.render();
         };
         UIControl.prototype.dispose = function () {
+            this.$emit('dispose', new UIEvent(this, null));
             this.$injected = false;
         };
         return UIControl;
