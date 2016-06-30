@@ -8,6 +8,58 @@ export module core {
         }
     }
 
+    export class EventListenersCollection {
+        private $hooks:Array<Function> = []
+        public eventName:string;
+        private $eventSource:Object;
+
+        public constructor(source:Object, name:string) {
+            this.eventName = name;
+            this.$eventSource = source;
+        }
+
+        public triggerEvent(eventArgs:any) {
+            this.$hooks.forEach( function(hook) {
+                if( typeof hook == 'function' ) hook.call(this.$eventSource, eventArgs);
+            });
+        }
+
+        public getListenersCount() {
+            return this.$hooks.length;
+        }
+
+        public addEventListener(eventListener:Function) {
+            this.$hooks.push(eventListener);
+        }
+
+        public removeEventListener(eventListener:Function) {
+            var hookId = this.$hooks.indexOf(eventListener);
+            if ( hookId > -1) this.$hooks.splice(hookId, 1);
+            return (hookId > -1);
+        }
+    }
+
+    export class EventEmitter {
+        private $listeners:Object = {}
+        private $owner:Object
+        public hasListeners(eventName:string) {
+            return typeof this.$listeners[ eventName.toString() ] !== 'undefined';
+        }
+        
+        public on(eventName:string, listener:Function) {
+            if ( !this.hasListeners(eventName) ) {
+                this.$listeners[ eventName.toString() ] = new core.EventListenersCollection(this.$owner, eventName);
+            }
+            this.$listeners[ eventName.toString() ].addEventListener(listener);
+        }
+
+        public off(eventName:string, listener:Function) {
+            if ( !this.hasListeners(eventName) ) return false;
+            return this.$listeners[ eventName.toString() ].removeEventListener(listener);
+        }
+
+    }
+
     export class Application {
         private element:HTMLElement
         public controls:core.Collection

@@ -13,6 +13,54 @@ var core;
         return version;
     }());
     core.version = version;
+    var EventListenersCollection = (function () {
+        function EventListenersCollection(source, name) {
+            this.$hooks = [];
+            this.eventName = name;
+            this.$eventSource = source;
+        }
+        EventListenersCollection.prototype.triggerEvent = function (eventArgs) {
+            this.$hooks.forEach(function (hook) {
+                if (typeof hook == 'function')
+                    hook.call(this.$eventSource, eventArgs);
+            });
+        };
+        EventListenersCollection.prototype.getListenersCount = function () {
+            return this.$hooks.length;
+        };
+        EventListenersCollection.prototype.addEventListener = function (eventListener) {
+            this.$hooks.push(eventListener);
+        };
+        EventListenersCollection.prototype.removeEventListener = function (eventListener) {
+            var hookId = this.$hooks.indexOf(eventListener);
+            if (hookId > -1)
+                this.$hooks.splice(hookId, 1);
+            return (hookId > -1);
+        };
+        return EventListenersCollection;
+    }());
+    core.EventListenersCollection = EventListenersCollection;
+    var EventEmitter = (function () {
+        function EventEmitter() {
+            this.$listeners = {};
+        }
+        EventEmitter.prototype.hasListeners = function (eventName) {
+            return typeof this.$listeners[eventName.toString()] !== 'undefined';
+        };
+        EventEmitter.prototype.on = function (eventName, listener) {
+            if (!this.hasListeners(eventName)) {
+                this.$listeners[eventName.toString()] = new core.EventListenersCollection(this.$owner, eventName);
+            }
+            this.$listeners[eventName.toString()].addEventListener(listener);
+        };
+        EventEmitter.prototype.off = function (eventName, listener) {
+            if (!this.hasListeners(eventName))
+                return false;
+            return this.$listeners[eventName.toString()].removeEventListener(listener);
+        };
+        return EventEmitter;
+    }());
+    core.EventEmitter = EventEmitter;
     var Application = (function () {
         function Application(handler) {
             this.element = handler;
