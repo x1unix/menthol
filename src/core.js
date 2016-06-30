@@ -123,12 +123,19 @@ var core;
                 this.inject();
         }
         EventGenerator.prototype.hasListeners = function (eventName) {
-            return typeof this.$listeners[eventName.toString()] !== 'undefined';
+            return typeof this.$listeners[eventName] == 'undefined';
         };
         EventGenerator.prototype.inject = function () {
-            this.$owner.on = this.on;
-            this.$owner.off = this.off;
-            this.$owner.$emit = this.emit;
+            var self = this;
+            this.$owner.on = function () {
+                self.on.apply(self, arguments);
+            };
+            this.$owner.off = function () {
+                self.off.apply(self, arguments);
+            };
+            this.$owner.$emit = function () {
+                self.emit.apply(self, arguments);
+            };
         };
         EventGenerator.prototype.emit = function (eventName, eventArgs) {
             if (!this.hasListeners(eventName)) {
@@ -166,7 +173,8 @@ var core;
             enumerable: true,
             configurable: true
         });
-        Application.prototype.redrawContext = function () {
+        Application.prototype.redrawContext = function (force) {
+            this.$emit('redraw', new UIEvent(this, { 'force': force }));
         };
         return Application;
     }(EventEmitter));

@@ -109,13 +109,20 @@ export module core {
         }
 
         public hasListeners(eventName:string) {
-            return typeof this.$listeners[ eventName.toString() ] !== 'undefined';
+            return typeof this.$listeners[ eventName ] == 'undefined';
         }
         
         private inject() {
-            this.$owner.on = this.on;
-            this.$owner.off = this.off;
-            this.$owner.$emit = this.emit;
+            var self = this;
+            this.$owner.on = function() {
+                self.on.apply(self, arguments);
+            };
+            this.$owner.off = function() {
+                self.off.apply(self, arguments);
+            };
+            this.$owner.$emit = function() {
+                self.emit.apply(self, arguments);
+            };
         }
 
         public emit(eventName:string, eventArgs:any) {
@@ -145,8 +152,8 @@ export module core {
             return this.canvas.getContext('2d');
         }
 
-        public redrawContext() {
-
+        public redrawContext(force) {
+            this.$emit('redraw', new UIEvent(this, {'force': force}));
         }
 
         public constructor(handler:HTMLElement) {

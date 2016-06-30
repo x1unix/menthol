@@ -2,7 +2,7 @@
  * Created by cyberd on 02.06.16.
  */
 
-var debug = false;
+var debug = true;
 var dir = {
     ts:'./ts',
     js: './src'
