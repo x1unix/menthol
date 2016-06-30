@@ -8,6 +8,16 @@ export module core {
         }
     }
 
+    export class EventEmitter {
+        public on(eventName:string, listener:Function) {}
+        public off(eventName:string, listener:Function) {}
+        public $emit(eventName:string, eventArgs:any){};
+        private $$e:EventGenerator;
+        public constructor() {
+            this.$$e = new core.EventGenerator(this);
+        }
+    } 
+
     export class EventListenersCollection {
         private $hooks:Array<Function> = []
         public eventName:string;
@@ -39,38 +49,58 @@ export module core {
         }
     }
 
-    export class EventEmitter {
+    export class EventGenerator {
         private $listeners:Object = {}
-        private $owner:Object
+        private $owner:core.EventEmitter
+
+        public constructor(eventGenerator:any, inject:Boolean = true) {
+            this.$owner = eventGenerator;
+            if(inject) this.inject();
+        }
+
         public hasListeners(eventName:string) {
             return typeof this.$listeners[ eventName.toString() ] !== 'undefined';
         }
         
+        private inject() {
+            this.$owner.on = this.on;
+            this.$owner.off = this.off;
+            this.$owner.$emit = this.emit;
+        }
+
+        public emit(eventName:string, eventArgs:any) {
+            if ( !this.hasListeners(eventName) ) {
+                this.$listeners[ eventName ].triggerEvent(eventArgs);
+            }
+        }
         public on(eventName:string, listener:Function) {
             if ( !this.hasListeners(eventName) ) {
-                this.$listeners[ eventName.toString() ] = new core.EventListenersCollection(this.$owner, eventName);
+                this.$listeners[ eventName ] = new core.EventListenersCollection(this.$owner, eventName);
             }
-            this.$listeners[ eventName.toString() ].addEventListener(listener);
+            this.$listeners[ eventName ].addEventListener(listener);
         }
 
         public off(eventName:string, listener:Function) {
             if ( !this.hasListeners(eventName) ) return false;
-            return this.$listeners[ eventName.toString() ].removeEventListener(listener);
+            return this.$listeners[ eventName ].removeEventListener(listener);
         }
 
     }
 
-    export class Application {
+    export class Application extends EventEmitter {
         private element:HTMLElement
         public controls:core.Collection
         private canvas:HTMLCanvasElement
         get context() {
             return this.canvas.getContext('2d');
         }
+
         public redrawContext() {
 
         }
+
         public constructor(handler:HTMLElement) {
+            super();
             this.element = handler;
             this.canvas = document.createElement('canvas');
             this.element.appendChild(this.canvas);
@@ -79,15 +109,17 @@ export module core {
     }
 
 
-    export class Collection {
+    export class Collection extends EventEmitter {
         private items:Array<core.UIControl>
         private collectionHandler:any
         public $defaultApplication:core.Application
         public constructor(handler:any, appInstance:core.Application) {
+            super();
             this.collectionHandler = handler;
             this.items = [];
             this.$defaultApplication = appInstance;
         }
+
         public add(item:any) {
             item.$$inject(this.collectionHandler);
             this.items.push(item);
@@ -117,7 +149,7 @@ export module core {
         static right:string = 'right';
     }
 
-    export class UIControl {
+    export class UIControl extends EventEmitter {
         private __position__:core.Point
         private owner:core.Application
         private $parent:core.UIControl
@@ -130,10 +162,12 @@ export module core {
         private $foreColor:string = '#000'
         
         public constructor(owner:core.Application) {
+            super();
             this.owner = owner;
             this.$context = owner.context;
             this.controls = new core.Collection(this, owner);
         }
+
         get context():CanvasRenderingContext2D {
             return this.$context;
         }

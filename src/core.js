@@ -1,4 +1,9 @@
 "use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var core;
 (function (core) {
     var version = (function () {
@@ -13,6 +18,17 @@ var core;
         return version;
     }());
     core.version = version;
+    var EventEmitter = (function () {
+        function EventEmitter() {
+            this.$$e = new core.EventGenerator(this);
+        }
+        EventEmitter.prototype.on = function (eventName, listener) { };
+        EventEmitter.prototype.off = function (eventName, listener) { };
+        EventEmitter.prototype.$emit = function (eventName, eventArgs) { };
+        ;
+        return EventEmitter;
+    }());
+    core.EventEmitter = EventEmitter;
     var EventListenersCollection = (function () {
         function EventListenersCollection(source, name) {
             this.$hooks = [];
@@ -40,29 +56,45 @@ var core;
         return EventListenersCollection;
     }());
     core.EventListenersCollection = EventListenersCollection;
-    var EventEmitter = (function () {
-        function EventEmitter() {
+    var EventGenerator = (function () {
+        function EventGenerator(eventGenerator, inject) {
+            if (inject === void 0) { inject = true; }
             this.$listeners = {};
+            this.$owner = eventGenerator;
+            if (inject)
+                this.inject();
         }
-        EventEmitter.prototype.hasListeners = function (eventName) {
+        EventGenerator.prototype.hasListeners = function (eventName) {
             return typeof this.$listeners[eventName.toString()] !== 'undefined';
         };
-        EventEmitter.prototype.on = function (eventName, listener) {
-            if (!this.hasListeners(eventName)) {
-                this.$listeners[eventName.toString()] = new core.EventListenersCollection(this.$owner, eventName);
-            }
-            this.$listeners[eventName.toString()].addEventListener(listener);
+        EventGenerator.prototype.inject = function () {
+            this.$owner.on = this.on;
+            this.$owner.off = this.off;
+            this.$owner.$emit = this.emit;
         };
-        EventEmitter.prototype.off = function (eventName, listener) {
+        EventGenerator.prototype.emit = function (eventName, eventArgs) {
+            if (!this.hasListeners(eventName)) {
+                this.$listeners[eventName].triggerEvent(eventArgs);
+            }
+        };
+        EventGenerator.prototype.on = function (eventName, listener) {
+            if (!this.hasListeners(eventName)) {
+                this.$listeners[eventName] = new core.EventListenersCollection(this.$owner, eventName);
+            }
+            this.$listeners[eventName].addEventListener(listener);
+        };
+        EventGenerator.prototype.off = function (eventName, listener) {
             if (!this.hasListeners(eventName))
                 return false;
-            return this.$listeners[eventName.toString()].removeEventListener(listener);
+            return this.$listeners[eventName].removeEventListener(listener);
         };
-        return EventEmitter;
+        return EventGenerator;
     }());
-    core.EventEmitter = EventEmitter;
-    var Application = (function () {
+    core.EventGenerator = EventGenerator;
+    var Application = (function (_super) {
+        __extends(Application, _super);
         function Application(handler) {
+            _super.call(this);
             this.element = handler;
             this.canvas = document.createElement('canvas');
             this.element.appendChild(this.canvas);
@@ -78,10 +110,12 @@ var core;
         Application.prototype.redrawContext = function () {
         };
         return Application;
-    }());
+    }(EventEmitter));
     core.Application = Application;
-    var Collection = (function () {
+    var Collection = (function (_super) {
+        __extends(Collection, _super);
         function Collection(handler, appInstance) {
+            _super.call(this);
             this.collectionHandler = handler;
             this.items = [];
             this.$defaultApplication = appInstance;
@@ -98,7 +132,7 @@ var core;
             }
         };
         return Collection;
-    }());
+    }(EventEmitter));
     core.Collection = Collection;
     var Point = (function () {
         function Point(x, y) {
@@ -119,8 +153,10 @@ var core;
         return TextAlign;
     }());
     core.TextAlign = TextAlign;
-    var UIControl = (function () {
+    var UIControl = (function (_super) {
+        __extends(UIControl, _super);
         function UIControl(owner) {
+            _super.call(this);
             this.$height = 128;
             this.$width = 128;
             this.$injected = false;
@@ -225,6 +261,6 @@ var core;
             this.$injected = false;
         };
         return UIControl;
-    }());
+    }(EventEmitter));
     core.UIControl = UIControl;
 })(core = exports.core || (exports.core = {}));
