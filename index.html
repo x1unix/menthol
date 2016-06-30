@@ -12,6 +12,9 @@
     var app = new kratos.Application( document.getElementById('app') );
     var label = new kratos.ui.Label( app );
     label.text = 'Hello World!';
+    label.on('render', function(data) {
+      console.info('label was rendered! ',data);
+    });
     app.controls.add( label );
   </script>
   

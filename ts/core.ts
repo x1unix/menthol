@@ -79,8 +79,9 @@ export module core {
         }
 
         public triggerEvent(eventArgs:any) {
+            var self = this;
             this.$hooks.forEach( function(hook) {
-                if( typeof hook == 'function' ) hook.call(this.$eventSource, eventArgs);
+                if( typeof hook == 'function' ) hook.call(self.$eventSource, eventArgs);
             });
         }
 
@@ -109,7 +110,7 @@ export module core {
         }
 
         public hasListeners(eventName:string) {
-            return typeof this.$listeners[ eventName ] == 'undefined';
+            return typeof this.$listeners[ eventName ] !== 'undefined';
         }
         
         private inject() {
@@ -126,7 +127,7 @@ export module core {
         }
 
         public emit(eventName:string, eventArgs:any) {
-            if ( !this.hasListeners(eventName) ) {
+            if ( this.hasListeners(eventName) ) {
                 this.$listeners[ eventName ].triggerEvent(eventArgs);
             }
         }

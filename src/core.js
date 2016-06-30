@@ -94,9 +94,10 @@ var core;
             this.$eventSource = source;
         }
         EventListenersCollection.prototype.triggerEvent = function (eventArgs) {
+            var self = this;
             this.$hooks.forEach(function (hook) {
                 if (typeof hook == 'function')
-                    hook.call(this.$eventSource, eventArgs);
+                    hook.call(self.$eventSource, eventArgs);
             });
         };
         EventListenersCollection.prototype.getListenersCount = function () {
@@ -123,7 +124,7 @@ var core;
                 this.inject();
         }
         EventGenerator.prototype.hasListeners = function (eventName) {
-            return typeof this.$listeners[eventName] == 'undefined';
+            return typeof this.$listeners[eventName] !== 'undefined';
         };
         EventGenerator.prototype.inject = function () {
             var self = this;
@@ -138,7 +139,7 @@ var core;
             };
         };
         EventGenerator.prototype.emit = function (eventName, eventArgs) {
-            if (!this.hasListeners(eventName)) {
+            if (this.hasListeners(eventName)) {
                 this.$listeners[eventName].triggerEvent(eventArgs);
             }
         };
