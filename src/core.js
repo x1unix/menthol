@@ -180,4 +180,3 @@ var core;
     }());
     core.UIControl = UIControl;
 })(core = exports.core || (exports.core = {}));
-//# sourceMappingURL=core.js.map

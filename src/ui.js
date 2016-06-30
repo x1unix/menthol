@@ -43,4 +43,3 @@ var ui;
     }(core_1.core.UIControl));
     ui.Label = Label;
 })(ui = exports.ui || (exports.ui = {}));
-//# sourceMappingURL=ui.js.map
