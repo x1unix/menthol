@@ -240,6 +240,21 @@ export module core {
         public canvas:HTMLCanvasElement
         private _map: core.ConponentMapper
 
+        public get height() : number {
+            return this.canvas.height;
+        }
+        public set height(v : number) {
+            this.canvas.height = v;
+        }
+
+        public get width() : number {
+            return this.canvas.width;
+        }
+        public set width(v : number) {
+            this.canvas.width = v;
+        }
+        
+        
         get context() {
             return this.canvas.getContext('2d');
         }
@@ -257,7 +272,7 @@ export module core {
             this.mapper.register(element);
         }
 
-        public constructor(handler:HTMLElement) {
+        public constructor(handler:HTMLElement, bootstrap:Function) {
             super();
 
             var self = this;
@@ -266,6 +281,9 @@ export module core {
 
             this.element = handler;
             this.canvas = document.createElement('canvas');
+
+            bootstrap.bind(self);
+
             this.element.appendChild(this.canvas);
             this.controls = new core.Collection(null, this);
 

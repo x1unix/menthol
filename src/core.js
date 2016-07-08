@@ -236,11 +236,12 @@ var core;
     core.ConponentMapper = ConponentMapper;
     var Application = (function (_super) {
         __extends(Application, _super);
-        function Application(handler) {
+        function Application(handler, bootstrap) {
             _super.call(this);
             var self = this;
             this.element = handler;
             this.canvas = document.createElement('canvas');
+            bootstrap.bind(self);
             this.element.appendChild(this.canvas);
             this.controls = new core.Collection(null, this);
             this.controls.on('elementInserted', function (item) {
@@ -251,6 +252,26 @@ var core;
                 console.log(event);
             });
         }
+        Object.defineProperty(Application.prototype, "height", {
+            get: function () {
+                return this.canvas.height;
+            },
+            set: function (v) {
+                this.canvas.height = v;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Application.prototype, "width", {
+            get: function () {
+                return this.canvas.width;
+            },
+            set: function (v) {
+                this.canvas.width = v;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(Application.prototype, "context", {
             get: function () {
                 return this.canvas.getContext('2d');
