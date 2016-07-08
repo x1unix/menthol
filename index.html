@@ -10,10 +10,13 @@
   <script src="kratos.js"></script>
   <script>
     var app = new kratos.Application( document.getElementById('app'), function() {
-      this.height = 32;
-      this.width = 32;
+      this.height = 48;
+      this.width = 48;
+      console.log('call bootstrap',this);
     } );
     var label = new kratos.ui.Label( app );
+    label.height = 18;
+    label.width = 32;
     
     label.on('render', function(data) {
       console.info('label was rendered! ',data);

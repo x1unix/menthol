@@ -204,10 +204,10 @@ var core;
         function ConponentMapper(owner) {
             this._locationMap = [];
             this._guidMap = {};
-            for (var y = 1; y <= owner.canvas.height; y++) {
-                this._locationMap[y] = new Array();
-                for (var x = 1; x <= owner.canvas.width; x++) {
-                    this._locationMap[y][x] = new Array();
+            for (var x = 1; x <= owner.canvas.width; x++) {
+                this._locationMap[x] = new Array();
+                for (var y = 1; y <= owner.canvas.height; y++) {
+                    this._locationMap[x][y] = new Array();
                 }
             }
         }
@@ -216,16 +216,19 @@ var core;
         ConponentMapper.prototype._mapElement = function (element) {
             var guid = element.id.toString();
             var coords = element.coordinates();
-            for (var y = coords.y1 + 0; y <= coords.y2; y++) {
-                if (!this._locationMap[y])
-                    this._locationMap[y] = new Array();
-                for (var x = coords.x1 + 0; x < coords.x2; x++) {
-                    this._locationMap[y][x] = guid;
+            for (var x = coords.x1 + 0; x <= coords.x2; x++) {
+                if (!this._locationMap[x])
+                    this._locationMap[x] = new Array();
+                for (var y = coords.y1 + 0; y < coords.y2; y++) {
+                    this._locationMap[x][y] = guid;
                 }
             }
         };
         ConponentMapper.prototype._registerId = function (element) {
             this._guidMap[element.id.toString()] = element;
+        };
+        ConponentMapper.prototype.getLocatedId = function (point) {
+            return this._locationMap[point.x][point.y];
         };
         ConponentMapper.prototype.register = function (item) {
             this._registerId(item);
@@ -241,7 +244,8 @@ var core;
             var self = this;
             this.element = handler;
             this.canvas = document.createElement('canvas');
-            bootstrap.bind(self);
+            if (bootstrap)
+                bootstrap.call(self, handler);
             this.element.appendChild(this.canvas);
             this.controls = new core.Collection(null, this);
             this.controls.on('elementInserted', function (item) {
@@ -250,6 +254,14 @@ var core;
             this._map = new core.ConponentMapper(this);
             this.canvas.addEventListener('click', function (event) {
                 console.log(event);
+                var p = new Point(event.layerX, event.layerY);
+                try {
+                    console.warn(self._map.getLocatedId(p));
+                }
+                catch (ex) {
+                    console.error(p);
+                    console.error(ex);
+                }
             });
         }
         Object.defineProperty(Application.prototype, "height", {

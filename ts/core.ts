@@ -199,10 +199,10 @@ export module core {
         private _guidMap = {};
 
         public constructor(owner:core.Application) {
-            for(let y = 1; y <= owner.canvas.height; y++) {
-                this._locationMap[y] = new Array();
-                for(let x = 1; x <= owner.canvas.width; x++) {
-                    this._locationMap[y][x] = new Array();
+            for(let x = 1; x <= owner.canvas.width; x++) {
+                this._locationMap[x] = new Array();
+                for(let y = 1; y <= owner.canvas.height; y++) {
+                    this._locationMap[x][y] = new Array();
                 }
             }
         }
@@ -215,10 +215,10 @@ export module core {
             var guid = element.id.toString();
             var coords = element.coordinates();
 
-            for(let y = coords.y1 + 0; y <= coords.y2; y++) {
-                if(!this._locationMap[y]) this._locationMap[y] = new Array();
-                for(let x = coords.x1 + 0; x < coords.x2; x++) {
-                    this._locationMap[y][x] = guid;
+            for(let x = coords.x1 + 0; x <= coords.x2; x++) {
+                if(!this._locationMap[x]) this._locationMap[x] = new Array();
+                for(let y = coords.y1 + 0; y < coords.y2; y++) {
+                    this._locationMap[x][y] = guid;
                 }
             }
             
@@ -226,6 +226,10 @@ export module core {
 
         private _registerId(element:UIControl) {
             this._guidMap[element.id.toString()] = element;
+        }
+
+        public getLocatedId(point:Point) {
+            return this._locationMap[point.x][point.y];
         }
 
         public register(item:UIControl) {
@@ -282,7 +286,7 @@ export module core {
             this.element = handler;
             this.canvas = document.createElement('canvas');
 
-            bootstrap.bind(self);
+            if(bootstrap) bootstrap.call(self, handler);
 
             this.element.appendChild(this.canvas);
             this.controls = new core.Collection(null, this);
@@ -297,6 +301,14 @@ export module core {
             this._map = new core.ConponentMapper(this);
             this.canvas.addEventListener('click', function(event) {
                 console.log(event);
+                var p = new Point(event.layerX, event.layerY);
+                
+                try {
+                    console.warn(self._map.getLocatedId(p) );
+                } catch(ex) {
+                    console.error(p);
+                    console.error(ex);
+                }
             });
         }
     }
