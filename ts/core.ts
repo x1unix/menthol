@@ -8,6 +8,30 @@ export module core {
         }
     }
 
+    export class GUID {
+        public static generate():String {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+            }
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                s4() + '-' + s4() + s4() + s4();
+        }
+        public toString():String {
+            return new String();
+        }
+        
+        public length():Number {
+            return this.toString().length;
+        }
+
+        public constructor() {
+            var value:String = GUID.generate();
+            this.toString = () => value;
+        }
+    }
+
     export class Event {
         
         private _target : EventEmitter;
@@ -40,6 +64,24 @@ export module core {
         }
     }
 
+    export class UIMouseEvent extends UIEvent {
+        public constructor(target:EventEmitter, windowClickEvent:MouseEvent) {
+
+            super(target, {
+                type: windowClickEvent.type,
+                keys: {
+                    ctrl: windowClickEvent.ctrlKey,
+                    alt: windowClickEvent.altKey,
+                    shift: windowClickEvent.shiftKey,
+                    meta: windowClickEvent.metaKey
+                },
+                position: {
+                    x: windowClickEvent.layerX
+                }
+
+            });
+        }
+    } 
     export class PropertyChangedEvent extends UIEvent {
         public constructor(target:EventEmitter, propName:string, oldValue:any, newValue:any) {
             super(target, {
@@ -146,13 +188,31 @@ export module core {
 
     }
 
+    export class ConponentMapper {
+        private _locationMap = [];
+        private _guidMap = {};
+        public constructor(owner:core.Application) {
+            
+        }
+        public add(item:UIControl) {
+
+        }
+    }
+
     export class Application extends EventEmitter {
         private element:HTMLElement
         public controls:core.Collection
         private canvas:HTMLCanvasElement
+        private _map: core.ConponentMapper
+
         get context() {
             return this.canvas.getContext('2d');
         }
+
+        get mapper() {
+            return this._map;
+        }
+
 
         public redrawContext(force) {
             this.$emit('redraw', new UIEvent(this, {'force': force}));
@@ -160,11 +220,26 @@ export module core {
 
         public constructor(handler:HTMLElement) {
             super();
+
+            var self = this;
+
+            this._map = new core.ConponentMapper(this);
+
             this.element = handler;
             this.canvas = document.createElement('canvas');
             this.element.appendChild(this.canvas);
             this.controls = new core.Collection(null, this);
+
+            // Check when item inserted and 
+            this.controls.on('elementInserted', function(item) {
+                
+            });
+
             this.$emit('drawStart', new UIEvent(this, {}));
+
+            this.canvas.addEventListener('click', function(event) {
+                console.log(event);
+            });
         }
     }
 
@@ -222,7 +297,17 @@ export module core {
         private $injected:boolean = false
         private $backgroundColor:string = '#dedede'
         private $foreColor:string = '#000'
-        
+        private $GUID:core.GUID
+
+        public get id():core.GUID {
+            if( !this.hasId() ) this.$GUID = new core.GUID();
+            return this.$GUID;
+        }
+
+        public hasId():boolean {
+            return typeof this.$GUID == 'undefined' || !this.$GUID.length;
+        }
+
         public constructor(owner:core.Application) {
             super();
             this.owner = owner;

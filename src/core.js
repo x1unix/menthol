@@ -18,6 +18,29 @@ var core;
         return version;
     }());
     core.version = version;
+    var GUID = (function () {
+        function GUID() {
+            var value = GUID.generate();
+            this.toString = function () { return value; };
+        }
+        GUID.generate = function () {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            }
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                s4() + '-' + s4() + s4() + s4();
+        };
+        GUID.prototype.toString = function () {
+            return new String();
+        };
+        GUID.prototype.length = function () {
+            return this.toString().length;
+        };
+        return GUID;
+    }());
+    core.GUID = GUID;
     var Event = (function () {
         function Event(target, args) {
             this._args = args;
@@ -54,6 +77,25 @@ var core;
         return UIEvent;
     }(Event));
     core.UIEvent = UIEvent;
+    var UIMouseEvent = (function (_super) {
+        __extends(UIMouseEvent, _super);
+        function UIMouseEvent(target, windowClickEvent) {
+            _super.call(this, target, {
+                type: windowClickEvent.type,
+                keys: {
+                    ctrl: windowClickEvent.ctrlKey,
+                    alt: windowClickEvent.altKey,
+                    shift: windowClickEvent.shiftKey,
+                    meta: windowClickEvent.metaKey
+                },
+                position: {
+                    x: windowClickEvent.layerX
+                }
+            });
+        }
+        return UIMouseEvent;
+    }(UIEvent));
+    core.UIMouseEvent = UIMouseEvent;
     var PropertyChangedEvent = (function (_super) {
         __extends(PropertyChangedEvent, _super);
         function PropertyChangedEvent(target, propName, oldValue, newValue) {
@@ -158,19 +200,43 @@ var core;
         return EventGenerator;
     }());
     core.EventGenerator = EventGenerator;
+    var ConponentMapper = (function () {
+        function ConponentMapper(owner) {
+            this._locationMap = [];
+            this._guidMap = {};
+        }
+        ConponentMapper.prototype.add = function (item) {
+        };
+        return ConponentMapper;
+    }());
+    core.ConponentMapper = ConponentMapper;
     var Application = (function (_super) {
         __extends(Application, _super);
         function Application(handler) {
             _super.call(this);
+            var self = this;
+            this._map = new core.ConponentMapper(this);
             this.element = handler;
             this.canvas = document.createElement('canvas');
             this.element.appendChild(this.canvas);
             this.controls = new core.Collection(null, this);
+            this.controls.on('elementInserted', function (item) {
+            });
             this.$emit('drawStart', new UIEvent(this, {}));
+            this.canvas.addEventListener('click', function (event) {
+                console.log(event);
+            });
         }
         Object.defineProperty(Application.prototype, "context", {
             get: function () {
                 return this.canvas.getContext('2d');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Application.prototype, "mapper", {
+            get: function () {
+                return this._map;
             },
             enumerable: true,
             configurable: true
@@ -237,6 +303,18 @@ var core;
             this.$context = owner.context;
             this.controls = new core.Collection(this, owner);
         }
+        Object.defineProperty(UIControl.prototype, "id", {
+            get: function () {
+                if (!this.hasId())
+                    this.$GUID = new core.GUID();
+                return this.$GUID;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        UIControl.prototype.hasId = function () {
+            return typeof this.$GUID == 'undefined' || !this.$GUID.length;
+        };
         Object.defineProperty(UIControl.prototype, "context", {
             get: function () {
                 return this.$context;
