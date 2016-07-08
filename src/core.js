@@ -217,6 +217,8 @@ var core;
             var guid = element.id.toString();
             var coords = element.coordinates();
             for (var y = coords.y1 + 0; y <= coords.y2; y++) {
+                if (!this._locationMap[y])
+                    this._locationMap[y] = new Array();
                 for (var x = coords.x1 + 0; x < coords.x2; x++) {
                     this._locationMap[y][x] = guid;
                 }
@@ -326,6 +328,7 @@ var core;
             this.$foreColor = '#000';
             this.owner = owner;
             this.$context = owner.context;
+            this.__position__ = new core.Point(0, 0);
             this.controls = new core.Collection(this, owner);
         }
         Object.defineProperty(UIControl.prototype, "id", {
@@ -354,11 +357,6 @@ var core;
             enumerable: true,
             configurable: true
         });
-        UIControl.prototype.coordinates = function () {
-            debugger;
-            var x1 = this.position.x, x2 = x1 + this.width, y1 = this.position.y, y2 = y1 + this.height;
-            return { x1: x1, x2: x2, y1: y1, y2: y2 };
-        };
         Object.defineProperty(UIControl.prototype, "backgroundColor", {
             get: function () {
                 return this.$backgroundColor;
@@ -420,6 +418,10 @@ var core;
             enumerable: true,
             configurable: true
         });
+        UIControl.prototype.coordinates = function () {
+            var x1 = this.position.x, x2 = x1 + this.width, y1 = this.position.y, y2 = y1 + this.height;
+            return { x1: x1, x2: x2, y1: y1, y2: y2 };
+        };
         Object.defineProperty(UIControl.prototype, "parent", {
             get: function () {
                 return this.$parent;

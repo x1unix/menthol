@@ -216,6 +216,7 @@ export module core {
             var coords = element.coordinates();
 
             for(let y = coords.y1 + 0; y <= coords.y2; y++) {
+                if(!this._locationMap[y]) this._locationMap[y] = new Array();
                 for(let x = coords.x1 + 0; x < coords.x2; x++) {
                     this._locationMap[y][x] = guid;
                 }
@@ -351,6 +352,7 @@ export module core {
             super();
             this.owner = owner;
             this.$context = owner.context;
+            this.__position__ = new core.Point(0,0);
             this.controls = new core.Collection(this, owner);
         }
 
@@ -361,15 +363,7 @@ export module core {
             return this.$injected;
         }
 
-        public coordinates():Coordinates {
-            debugger;
-            var x1 = this.position.x,
-                x2 = x1 + this.width,
-                y1 = this.position.y,
-                y2 = y1 + this.height;
-
-           return {x1:x1,x2:x2,y1:y1,y2:y2};     
-        }
+       
         /**
          * Colors
          */
@@ -458,6 +452,15 @@ export module core {
             ));
             this.__position__ = newPosition;
             this.redrawContext();
+        }
+
+        public coordinates():Coordinates {
+            var x1 = this.position.x,
+                x2 = x1 + this.width,
+                y1 = this.position.y,
+                y2 = y1 + this.height;
+
+           return {x1:x1,x2:x2,y1:y1,y2:y2};     
         }
         get parent():core.UIControl {
             return this.$parent;
