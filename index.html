@@ -10,22 +10,29 @@
   <script src="kratos.js"></script>
   <script>
     var app = new kratos.Application( document.getElementById('app'), function() {
-      this.height = 48;
-      this.width = 48;
+      this.height = 256;
+      this.width = 256;
       console.log('call bootstrap',this);
     } );
-    var label = new kratos.ui.Label( app );
-    label.height = 18;
-    label.width = 32;
+    // var label = new kratos.ui.Label( app );
+    // label.height = 18;
+    // label.width = 32;
     
-    label.on('render', function(data) {
-      console.info('label was rendered! ',data);
-    });
-    label.on('propertyChange', function(data) {
-      console.info('label prop change! ',data);
-    });
-    label.text = 'Hello World!';
-    app.controls.add( label );
+    // label.on('render', function(data) {
+    //   console.info('label was rendered! ',data);
+    // });
+    // label.on('propertyChange', function(data) {
+    //   console.info('label prop change! ',data);
+    // });
+    // label.text = 'Hello World!';
+    // app.controls.add( label );
+
+    var rect = new kratos.ui.Rectangle(app);
+    rect.height = 32;
+    rect.width = 32;
+    rect.position.x = 0;
+    rect.position.y = 0;
+    app.controls.add(rect);
   </script>
   
 </body>

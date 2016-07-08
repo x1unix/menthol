@@ -1,9 +1,9 @@
 export module core {
     export interface Coordinates {
-        x1:number
-        x2:number
-        y1:number
-        y2:number
+        p1:Point,
+        p2:Point,
+        p3:Point,
+        p4:Point
     }
     export class version {
         public static major:number = 0;
@@ -213,11 +213,16 @@ export module core {
 
         private _mapElement(element:UIControl) {
             var guid = element.id.toString();
-            var coords = element.coordinates();
+            var coords = element.points();
 
-            for(let x = coords.x1 + 0; x <= coords.x2; x++) {
-                if(!this._locationMap[x]) this._locationMap[x] = new Array();
-                for(let y = coords.y1 + 0; y < coords.y2; y++) {
+            var x1 = coords[0].x,
+                x2 = coords[1].x,
+                y1 = coords[1].y,
+                y2 = coords[2].y;
+
+            for(let y = y1 + 0; y <= y2; y++) {
+                for(let x = x1 + 0; x <= x2; x++) {
+                    if(!this._locationMap[x]) this._locationMap[x] = new Array();
                     this._locationMap[x][y] = guid;
                 }
             }
@@ -484,13 +489,13 @@ export module core {
             this.redrawContext();
         }
 
-        public coordinates():Coordinates {
-            var x1 = this.position.x,
-                x2 = x1 + this.width,
-                y1 = this.position.y,
-                y2 = y1 + this.height;
+        public points():Array<Point> {
+            var p1 = new Point(this.position.x, this.position.y),
+                p2 = new Point(this.position.x + this.width, this.position.y),
+                p3 = new Point(this.position.x + this.width, this.position.y + this.height),
+                p4 = new Point(this.position.x, this.position.y + this.height);
 
-           return {x1:x1,x2:x2,y1:y1,y2:y2};     
+           return [p1,p2,p3,p4];     
         }
         get parent():core.UIControl {
             return this.$parent;

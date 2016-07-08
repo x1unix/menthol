@@ -7,6 +7,17 @@ var __extends = (this && this.__extends) || function (d, b) {
 var core_1 = require('./core');
 var ui;
 (function (ui) {
+    var Rectangle = (function (_super) {
+        __extends(Rectangle, _super);
+        function Rectangle() {
+            _super.apply(this, arguments);
+        }
+        Rectangle.prototype._render = function () {
+            this.context.fillRect(this.position.x, this.position.y, this.height, this.width);
+        };
+        return Rectangle;
+    }(core_1.core.UIControl));
+    ui.Rectangle = Rectangle;
     var Label = (function (_super) {
         __extends(Label, _super);
         function Label() {
