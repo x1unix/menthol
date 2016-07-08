@@ -213,7 +213,7 @@ export module core {
 
         private _mapElement(element:UIControl) {
             var guid = element.id.toString();
-            var coords = element.coordinates;
+            var coords = element.coordinates();
 
             for(let y = coords.y1 + 0; y <= coords.y2; y++) {
                 for(let x = coords.x1 + 0; x < coords.x2; x++) {
@@ -225,7 +225,6 @@ export module core {
 
         private _registerId(element:UIControl) {
             this._guidMap[element.id.toString()] = element;
-
         }
 
         public register(item:UIControl) {
@@ -345,7 +344,7 @@ export module core {
         }
 
         public hasId():boolean {
-            return typeof this.$GUID == 'undefined' || !this.$GUID.length;
+            return typeof this.$GUID !== 'undefined';
         }
 
         public constructor(owner:core.Application) {
@@ -362,7 +361,8 @@ export module core {
             return this.$injected;
         }
 
-        public get coordinates():Coordinates {
+        public coordinates():Coordinates {
+            debugger;
             var x1 = this.position.x,
                 x2 = x1 + this.width,
                 y1 = this.position.y,

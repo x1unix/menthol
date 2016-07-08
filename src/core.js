@@ -215,7 +215,7 @@ var core;
         };
         ConponentMapper.prototype._mapElement = function (element) {
             var guid = element.id.toString();
-            var coords = element.coordinates;
+            var coords = element.coordinates();
             for (var y = coords.y1 + 0; y <= coords.y2; y++) {
                 for (var x = coords.x1 + 0; x < coords.x2; x++) {
                     this._locationMap[y][x] = guid;
@@ -338,7 +338,7 @@ var core;
             configurable: true
         });
         UIControl.prototype.hasId = function () {
-            return typeof this.$GUID == 'undefined' || !this.$GUID.length;
+            return typeof this.$GUID !== 'undefined';
         };
         Object.defineProperty(UIControl.prototype, "context", {
             get: function () {
@@ -354,14 +354,11 @@ var core;
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(UIControl.prototype, "coordinates", {
-            get: function () {
-                var x1 = this.position.x, x2 = x1 + this.width, y1 = this.position.y, y2 = y1 + this.height;
-                return { x1: x1, x2: x2, y1: y1, y2: y2 };
-            },
-            enumerable: true,
-            configurable: true
-        });
+        UIControl.prototype.coordinates = function () {
+            debugger;
+            var x1 = this.position.x, x2 = x1 + this.width, y1 = this.position.y, y2 = y1 + this.height;
+            return { x1: x1, x2: x2, y1: y1, y2: y2 };
+        };
         Object.defineProperty(UIControl.prototype, "backgroundColor", {
             get: function () {
                 return this.$backgroundColor;
