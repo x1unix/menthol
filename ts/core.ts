@@ -1,4 +1,10 @@
 export module core {
+    export interface Coordinates {
+        x1:number
+        x2:number
+        y1:number
+        y2:number
+    }
     export class version {
         public static major:number = 0;
         public static minor:number = 0;
@@ -9,7 +15,7 @@ export module core {
     }
 
     export class GUID {
-        public static generate():String {
+        public static generate():string {
             function s4() {
                 return Math.floor((1 + Math.random()) * 0x10000)
                 .toString(16)
@@ -18,16 +24,16 @@ export module core {
             return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
                 s4() + '-' + s4() + s4() + s4();
         }
-        public toString():String {
-            return new String();
+        public toString():string {
+            return '';
         }
         
-        public length():Number {
+        public length():number {
             return this.toString().length;
         }
 
         public constructor() {
-            var value:String = GUID.generate();
+            var value:string = GUID.generate();
             this.toString = () => value;
         }
     }
@@ -189,20 +195,49 @@ export module core {
     }
 
     export class ConponentMapper {
-        private _locationMap = [];
+        private _locationMap:Array<any> = [];
         private _guidMap = {};
+
         public constructor(owner:core.Application) {
+            for(let y = 1; y <= owner.canvas.height; y++) {
+                this._locationMap[y] = new Array();
+                for(let x = 1; x <= owner.canvas.width; x++) {
+                    this._locationMap[y][x] = new Array();
+                }
+            }
+        }
+
+        private _refreshMap() {
+
+        }
+
+        private _mapElement(element:UIControl) {
+            var guid = element.id.toString();
+            var coords = element.coordinates;
+
+            for(let y = coords.y1 + 0; y <= coords.y2; y++) {
+                for(let x = coords.x1 + 0; x < coords.x2; x++) {
+                    this._locationMap[y][x] = guid;
+                }
+            }
             
         }
-        public add(item:UIControl) {
 
+        private _registerId(element:UIControl) {
+            this._guidMap[element.id.toString()] = element;
+
+        }
+
+        public register(item:UIControl) {
+            this._registerId(item);
+            this._mapElement(item);
         }
     }
 
     export class Application extends EventEmitter {
         private element:HTMLElement
         public controls:core.Collection
-        private canvas:HTMLCanvasElement
+        public canvas:HTMLCanvasElement
         private _map: core.ConponentMapper
 
         get context() {
@@ -218,12 +253,16 @@ export module core {
             this.$emit('redraw', new UIEvent(this, {'force': force}));
         }
 
+        public registerElement(element:UIControl) {
+            this.mapper.register(element);
+        }
+
         public constructor(handler:HTMLElement) {
             super();
 
             var self = this;
 
-            this._map = new core.ConponentMapper(this);
+            
 
             this.element = handler;
             this.canvas = document.createElement('canvas');
@@ -237,6 +276,7 @@ export module core {
 
             this.$emit('drawStart', new UIEvent(this, {}));
 
+            this._map = new core.ConponentMapper(this);
             this.canvas.addEventListener('click', function(event) {
                 console.log(event);
             });
@@ -270,9 +310,9 @@ export module core {
         }
     }
     export class Point {
-        public x:Number
-        public y:Number
-        public constructor(x:Number, y:Number) {
+        public x:number
+        public y:number
+        public constructor(x:number, y:number) {
             this.x = x;
             this.y = y;
         }
@@ -322,6 +362,14 @@ export module core {
             return this.$injected;
         }
 
+        public get coordinates():Coordinates {
+            var x1 = this.position.x,
+                x2 = x1 + this.width,
+                y1 = this.position.y,
+                y2 = y1 + this.height;
+
+           return {x1:x1,x2:x2,y1:y1,y2:y2};     
+        }
         /**
          * Colors
          */
@@ -439,6 +487,7 @@ export module core {
             this.$parent = parent;
             this.$injected = true;
 
+            this.owner.registerElement(this);
             this.$emit('inject', new UIEvent(this, {'parent': parent}));
             this.render();
         }

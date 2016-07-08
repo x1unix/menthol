@@ -33,7 +33,7 @@ var core;
                 s4() + '-' + s4() + s4() + s4();
         };
         GUID.prototype.toString = function () {
-            return new String();
+            return '';
         };
         GUID.prototype.length = function () {
             return this.toString().length;
@@ -204,8 +204,30 @@ var core;
         function ConponentMapper(owner) {
             this._locationMap = [];
             this._guidMap = {};
+            for (var y = 1; y <= owner.canvas.height; y++) {
+                this._locationMap[y] = new Array();
+                for (var x = 1; x <= owner.canvas.width; x++) {
+                    this._locationMap[y][x] = new Array();
+                }
+            }
         }
-        ConponentMapper.prototype.add = function (item) {
+        ConponentMapper.prototype._refreshMap = function () {
+        };
+        ConponentMapper.prototype._mapElement = function (element) {
+            var guid = element.id.toString();
+            var coords = element.coordinates;
+            for (var y = coords.y1 + 0; y <= coords.y2; y++) {
+                for (var x = coords.x1 + 0; x < coords.x2; x++) {
+                    this._locationMap[y][x] = guid;
+                }
+            }
+        };
+        ConponentMapper.prototype._registerId = function (element) {
+            this._guidMap[element.id.toString()] = element;
+        };
+        ConponentMapper.prototype.register = function (item) {
+            this._registerId(item);
+            this._mapElement(item);
         };
         return ConponentMapper;
     }());
@@ -215,7 +237,6 @@ var core;
         function Application(handler) {
             _super.call(this);
             var self = this;
-            this._map = new core.ConponentMapper(this);
             this.element = handler;
             this.canvas = document.createElement('canvas');
             this.element.appendChild(this.canvas);
@@ -223,6 +244,7 @@ var core;
             this.controls.on('elementInserted', function (item) {
             });
             this.$emit('drawStart', new UIEvent(this, {}));
+            this._map = new core.ConponentMapper(this);
             this.canvas.addEventListener('click', function (event) {
                 console.log(event);
             });
@@ -243,6 +265,9 @@ var core;
         });
         Application.prototype.redrawContext = function (force) {
             this.$emit('redraw', new UIEvent(this, { 'force': force }));
+        };
+        Application.prototype.registerElement = function (element) {
+            this.mapper.register(element);
         };
         return Application;
     }(EventEmitter));
@@ -325,6 +350,14 @@ var core;
         Object.defineProperty(UIControl.prototype, "isInjected", {
             get: function () {
                 return this.$injected;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(UIControl.prototype, "coordinates", {
+            get: function () {
+                var x1 = this.position.x, x2 = x1 + this.width, y1 = this.position.y, y2 = y1 + this.height;
+                return { x1: x1, x2: x2, y1: y1, y2: y2 };
             },
             enumerable: true,
             configurable: true
@@ -415,6 +448,7 @@ var core;
         UIControl.prototype.$$inject = function (parent) {
             this.$parent = parent;
             this.$injected = true;
+            this.owner.registerElement(this);
             this.$emit('inject', new UIEvent(this, { 'parent': parent }));
             this.render();
         };
