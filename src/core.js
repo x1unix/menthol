@@ -6,6 +6,12 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var core;
 (function (core) {
+    var BoxModel = (function () {
+        function BoxModel() {
+        }
+        return BoxModel;
+    }());
+    core.BoxModel = BoxModel;
     var version = (function () {
         function version() {
         }

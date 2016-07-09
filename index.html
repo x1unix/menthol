@@ -10,8 +10,8 @@
   <script src="kratos.js"></script>
   <script>
     var app = new kratos.Application( document.getElementById('app'), function() {
-      this.height = 256;
-      this.width = 256;
+      this.height = 500;
+      this.width = 800;
       console.log('call bootstrap',this);
     } );
     // var label = new kratos.ui.Label( app );
@@ -33,6 +33,14 @@
     rect.position.x = 0;
     rect.position.y = 0;
     app.controls.add(rect);
+
+    var button = new kratos.ui.Button(app);
+    button.height = 15;
+    button.width = 48;
+    button.position.x = 128;
+    button.position.y = 128;
+    app.controls.add(button);
+
   </script>
   
 </body>

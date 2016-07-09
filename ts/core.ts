@@ -5,6 +5,9 @@ export module core {
         p3:Point,
         p4:Point
     }
+    export class BoxModel {
+
+    }
     export class version {
         public static major:number = 0;
         public static minor:number = 0;

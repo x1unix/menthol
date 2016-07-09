@@ -4,9 +4,10 @@ export module ui {
 
     export class Rectangle extends core.UIControl {
         public _render() {
-            this.context.fillRect(this.position.x, this.position.y, this.height, this.width);
+            this.context.fillRect(this.position.x, this.position.y, this.width, this.height);
         }
     }
+    
 
     export class Label extends core.UIControl {
         private $text:string = 'New Label';
@@ -42,7 +43,15 @@ export module ui {
         }
 
         public _render() {
-            this.context.fillText(this.text, this.height, this.width);
+            this.context.fillText(this.text, this.position.y, this.position.x);
         }
-    }    
+    } 
+
+
+    export class Button extends Label {
+        public _render() {
+            this.context.fillRect(this.position.x, this.position.y, this.width, this.height);
+            this.context.fillText(this.text, this.position.x, this.position.y, this.width);
+        }
+    }   
 }

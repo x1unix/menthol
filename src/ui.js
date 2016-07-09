@@ -13,7 +13,7 @@ var ui;
             _super.apply(this, arguments);
         }
         Rectangle.prototype._render = function () {
-            this.context.fillRect(this.position.x, this.position.y, this.height, this.width);
+            this.context.fillRect(this.position.x, this.position.y, this.width, this.height);
         };
         return Rectangle;
     }(core_1.core.UIControl));
@@ -50,9 +50,21 @@ var ui;
             configurable: true
         });
         Label.prototype._render = function () {
-            this.context.fillText(this.text, this.height, this.width);
+            this.context.fillText(this.text, this.position.y, this.position.x);
         };
         return Label;
     }(core_1.core.UIControl));
     ui.Label = Label;
+    var Button = (function (_super) {
+        __extends(Button, _super);
+        function Button() {
+            _super.apply(this, arguments);
+        }
+        Button.prototype._render = function () {
+            this.context.fillRect(this.position.x, this.position.y, this.width, this.height);
+            this.context.fillText(this.text, this.position.x, this.position.y, this.width);
+        };
+        return Button;
+    }(Label));
+    ui.Button = Button;
 })(ui = exports.ui || (exports.ui = {}));
