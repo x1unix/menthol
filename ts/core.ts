@@ -1,4 +1,9 @@
 export module core {
+
+    export function isset(e) {
+        return typeof e !== 'undefined';
+    }
+
     export interface Coordinates {
         p1:Point,
         p2:Point,
@@ -78,6 +83,7 @@ export module core {
 
             super(target, {
                 type: windowClickEvent.type,
+                target: target,
                 keys: {
                     ctrl: windowClickEvent.ctrlKey,
                     alt: windowClickEvent.altKey,
@@ -85,7 +91,8 @@ export module core {
                     meta: windowClickEvent.metaKey
                 },
                 position: {
-                    x: windowClickEvent.layerX
+                    x: windowClickEvent.layerX,
+                    y: windowClickEvent.layerY
                 }
 
             });
@@ -201,7 +208,7 @@ export module core {
         private _locationMap:Array<any> = [];
         private _guidMap = {};
 
-        public constructor(owner:core.Application) {
+        public constructor(owner:core.Form) {
             for(let x = 1; x <= owner.canvas.width; x++) {
                 this._locationMap[x] = new Array();
                 for(let y = 1; y <= owner.canvas.height; y++) {
@@ -226,7 +233,8 @@ export module core {
             for(let y = y1 + 0; y <= y2; y++) {
                 for(let x = x1 + 0; x <= x2; x++) {
                     if(!this._locationMap[x]) this._locationMap[x] = new Array();
-                    this._locationMap[x][y] = guid;
+                    if(typeof this._locationMap[x][y] == 'undefined' ) this._locationMap[x][y] = [];
+                    this._locationMap[x][y].push(guid);
                 }
             }
             
@@ -236,9 +244,15 @@ export module core {
             this._guidMap[element.id.toString()] = element;
         }
 
-        public getLocatedId(point:Point) {
-            return this._locationMap[point.x][point.y];
+        public getElementById(eid:string) {
+            return this._guidMap[eid];
         }
+
+        public getLocatedId(point:Point) {
+            var target = this._locationMap[point.x][point.y];
+            return target[target.length - 1];
+        }
+
 
         public register(item:UIControl) {
             this._registerId(item);
@@ -246,7 +260,7 @@ export module core {
         }
     }
 
-    export class Application extends EventEmitter {
+    export class Form extends EventEmitter {
         private element:HTMLElement
         public controls:core.Collection
         public canvas:HTMLCanvasElement
@@ -284,12 +298,14 @@ export module core {
             this.mapper.register(element);
         }
 
+        public getElementById(id:string) {
+            return this._map.getElementById(id);
+        }
+
         public constructor(handler:HTMLElement, bootstrap:Function) {
             super();
 
             var self = this;
-
-            
 
             this.element = handler;
             this.canvas = document.createElement('canvas');
@@ -308,13 +324,13 @@ export module core {
 
             this._map = new core.ConponentMapper(this);
             this.canvas.addEventListener('click', function(event) {
-                console.log(event);
                 var p = new Point(event.layerX, event.layerY);
-                
                 try {
-                    console.warn(self._map.getLocatedId(p) );
+                    var target =  self._map.getLocatedId(p);
+                    target = ( core.isset(target) && target.length > 0) ? self._map.getElementById(target) : self;
+                    target.$emit('click', new UIMouseEvent(target, event));
+                    
                 } catch(ex) {
-                    console.error(p);
                     console.error(ex);
                 }
             });
@@ -325,12 +341,12 @@ export module core {
     export class Collection extends EventEmitter {
         private items:Array<core.UIControl>
         private collectionHandler:any
-        public $defaultApplication:core.Application
-        public constructor(handler:any, appInstance:core.Application) {
+        public $defaultForm:core.Form
+        public constructor(handler:any, appInstance:core.Form) {
             super();
             this.collectionHandler = handler;
             this.items = [];
-            this.$defaultApplication = appInstance;
+            this.$defaultForm = appInstance;
         }
 
         public add(item:any) {
@@ -366,7 +382,7 @@ export module core {
 
     export class UIControl extends EventEmitter {
         private __position__:core.Point
-        private owner:core.Application
+        private owner:core.Form
         private $parent:core.UIControl
         private $context:CanvasRenderingContext2D
         public controls:core.Collection
@@ -386,7 +402,7 @@ export module core {
             return typeof this.$GUID !== 'undefined';
         }
 
-        public constructor(owner:core.Application) {
+        public constructor(owner:core.Form) {
             super();
             this.owner = owner;
             this.$context = owner.context;

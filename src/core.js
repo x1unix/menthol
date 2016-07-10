@@ -6,6 +6,10 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var core;
 (function (core) {
+    function isset(e) {
+        return typeof e !== 'undefined';
+    }
+    core.isset = isset;
     var BoxModel = (function () {
         function BoxModel() {
         }
@@ -88,6 +92,7 @@ var core;
         function UIMouseEvent(target, windowClickEvent) {
             _super.call(this, target, {
                 type: windowClickEvent.type,
+                target: target,
                 keys: {
                     ctrl: windowClickEvent.ctrlKey,
                     alt: windowClickEvent.altKey,
@@ -95,7 +100,8 @@ var core;
                     meta: windowClickEvent.metaKey
                 },
                 position: {
-                    x: windowClickEvent.layerX
+                    x: windowClickEvent.layerX,
+                    y: windowClickEvent.layerY
                 }
             });
         }
@@ -227,15 +233,21 @@ var core;
                 for (var x = x1 + 0; x <= x2; x++) {
                     if (!this._locationMap[x])
                         this._locationMap[x] = new Array();
-                    this._locationMap[x][y] = guid;
+                    if (typeof this._locationMap[x][y] == 'undefined')
+                        this._locationMap[x][y] = [];
+                    this._locationMap[x][y].push(guid);
                 }
             }
         };
         ConponentMapper.prototype._registerId = function (element) {
             this._guidMap[element.id.toString()] = element;
         };
+        ConponentMapper.prototype.getElementById = function (eid) {
+            return this._guidMap[eid];
+        };
         ConponentMapper.prototype.getLocatedId = function (point) {
-            return this._locationMap[point.x][point.y];
+            var target = this._locationMap[point.x][point.y];
+            return target[target.length - 1];
         };
         ConponentMapper.prototype.register = function (item) {
             this._registerId(item);
@@ -244,9 +256,9 @@ var core;
         return ConponentMapper;
     }());
     core.ConponentMapper = ConponentMapper;
-    var Application = (function (_super) {
-        __extends(Application, _super);
-        function Application(handler, bootstrap) {
+    var Form = (function (_super) {
+        __extends(Form, _super);
+        function Form(handler, bootstrap) {
             _super.call(this);
             var self = this;
             this.element = handler;
@@ -260,18 +272,18 @@ var core;
             this.$emit('drawStart', new UIEvent(this, {}));
             this._map = new core.ConponentMapper(this);
             this.canvas.addEventListener('click', function (event) {
-                console.log(event);
                 var p = new Point(event.layerX, event.layerY);
                 try {
-                    console.warn(self._map.getLocatedId(p));
+                    var target = self._map.getLocatedId(p);
+                    target = (core.isset(target) && target.length > 0) ? self._map.getElementById(target) : self;
+                    target.$emit('click', new UIMouseEvent(target, event));
                 }
                 catch (ex) {
-                    console.error(p);
                     console.error(ex);
                 }
             });
         }
-        Object.defineProperty(Application.prototype, "height", {
+        Object.defineProperty(Form.prototype, "height", {
             get: function () {
                 return this.canvas.height;
             },
@@ -281,7 +293,7 @@ var core;
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(Application.prototype, "width", {
+        Object.defineProperty(Form.prototype, "width", {
             get: function () {
                 return this.canvas.width;
             },
@@ -291,36 +303,39 @@ var core;
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(Application.prototype, "context", {
+        Object.defineProperty(Form.prototype, "context", {
             get: function () {
                 return this.canvas.getContext('2d');
             },
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(Application.prototype, "mapper", {
+        Object.defineProperty(Form.prototype, "mapper", {
             get: function () {
                 return this._map;
             },
             enumerable: true,
             configurable: true
         });
-        Application.prototype.redrawContext = function (force) {
+        Form.prototype.redrawContext = function (force) {
             this.$emit('redraw', new UIEvent(this, { 'force': force }));
         };
-        Application.prototype.registerElement = function (element) {
+        Form.prototype.registerElement = function (element) {
             this.mapper.register(element);
         };
-        return Application;
+        Form.prototype.getElementById = function (id) {
+            return this._map.getElementById(id);
+        };
+        return Form;
     }(EventEmitter));
-    core.Application = Application;
+    core.Form = Form;
     var Collection = (function (_super) {
         __extends(Collection, _super);
         function Collection(handler, appInstance) {
             _super.call(this);
             this.collectionHandler = handler;
             this.items = [];
-            this.$defaultApplication = appInstance;
+            this.$defaultForm = appInstance;
         }
         Collection.prototype.add = function (item) {
             item.$$inject(this.collectionHandler);

@@ -9,11 +9,15 @@
   <div id="app"></div>
   <script src="kratos.js"></script>
   <script>
-    var app = new kratos.Application( document.getElementById('app'), function() {
+    var app = new kratos.Form( document.getElementById('app'), function() {
       this.height = 500;
       this.width = 800;
       console.log('call bootstrap',this);
     } );
+
+    app.on('click', function() {
+      alert('canvas form click!');
+    })
     // var label = new kratos.ui.Label( app );
     // label.height = 18;
     // label.width = 32;
@@ -34,11 +38,20 @@
     rect.position.y = 0;
     app.controls.add(rect);
 
+    rect.on('click', function() {
+      alert('rect click');
+    })
+
     var button = new kratos.ui.Button(app);
     button.height = 15;
     button.width = 48;
     button.position.x = 128;
     button.position.y = 128;
+
+    button.on('click', function(event) {
+      alert('button click');
+      console.info('button click', event);
+    })
     app.controls.add(button);
 
   </script>
