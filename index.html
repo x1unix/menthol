@@ -55,11 +55,11 @@
     button.width = 48;
     button.left = 128;
     button.top = 128;
+    button.text = "Click on me!";
 
     button.on('click', function(event) {
-      alert('button click');
-      console.info('button click', event);
-    })
+      button.top = button.top + 100;
+    });
     app.controls.add(button);
 
   </script>
