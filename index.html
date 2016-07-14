@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Document</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      min-height: 100%;
+    }
+  </style>
 </head>
 <body>
   
@@ -10,14 +18,14 @@
   <script src="kratos.js"></script>
   <script>
     var app = new kratos.Form( document.getElementById('app'), function() {
-      this.height = 500;
-      this.width = 800;
+      this.height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+      this.width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
       console.log('call bootstrap',this);
     } );
 
     app.on('click', function() {
       alert('canvas form click!');
-    })
+    });
     // var label = new kratos.ui.Label( app );
     // label.height = 18;
     // label.width = 32;
@@ -34,8 +42,8 @@
     var rect = new kratos.ui.Rectangle(app);
     rect.height = 32;
     rect.width = 32;
-    rect.position.x = 0;
-    rect.position.y = 0;
+    rect.left = 0;
+    rect.top = 0;
     app.controls.add(rect);
 
     rect.on('click', function() {
@@ -45,8 +53,8 @@
     var button = new kratos.ui.Button(app);
     button.height = 15;
     button.width = 48;
-    button.position.x = 128;
-    button.position.y = 128;
+    button.left = 128;
+    button.top = 128;
 
     button.on('click', function(event) {
       alert('button click');

@@ -197,17 +197,29 @@ var core;
                 this.$listeners[eventName].triggerEvent(eventArgs);
             }
         };
-        EventGenerator.prototype.on = function (eventName, listener) {
+        EventGenerator.prototype.addEventListener = function (eventName, listener) {
             if (!this.hasListeners(eventName)) {
                 this.$listeners[eventName] = new core.EventListenersCollection(this.$owner, eventName);
             }
             this.$listeners[eventName].addEventListener(listener);
             return this.$owner;
         };
-        EventGenerator.prototype.off = function (eventName, listener) {
+        EventGenerator.prototype.removeEventListener = function (eventName, listener) {
             if (!this.hasListeners(eventName))
                 return false;
             return this.$listeners[eventName].removeEventListener(listener);
+        };
+        EventGenerator.prototype.on = function (eventNames, listener) {
+            var self = this;
+            eventNames.trim().split(' ').forEach(function (eName) {
+                self.addEventListener(eName, listener);
+            });
+        };
+        EventGenerator.prototype.off = function (eventNames, listener) {
+            var self = this;
+            eventNames.trim().split(' ').forEach(function (eName) {
+                self.removeEventListener(eName, listener);
+            });
         };
         return EventGenerator;
     }());
@@ -381,11 +393,22 @@ var core;
             this.$injected = false;
             this.$backgroundColor = '#dedede';
             this.$foreColor = '#000';
+            this._drawn = false;
+            var self = this;
             this.owner = owner;
             this.$context = owner.context;
             this.__position__ = new core.Point(0, 0);
             this.controls = new core.Collection(this, owner);
+            this.on('layerUpdate', this._onUpdate);
+            this.on('propertyChange', this._onUpdate);
         }
+        Object.defineProperty(UIControl.prototype, "drawn", {
+            get: function () {
+                return this._drawn;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(UIControl.prototype, "id", {
             get: function () {
                 if (!this.hasId())
@@ -412,6 +435,11 @@ var core;
             enumerable: true,
             configurable: true
         });
+        UIControl.prototype._onUpdate = function () {
+            console.log('update layer ' + this.id);
+            this.remove();
+            this.redrawContext(true);
+        };
         Object.defineProperty(UIControl.prototype, "backgroundColor", {
             get: function () {
                 return this.$backgroundColor;
@@ -461,14 +489,37 @@ var core;
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(UIControl.prototype, "top", {
+            get: function () {
+                return this.__position__.y;
+            },
+            set: function (v) {
+                this.$emit('propertyChange', new PropertyChangedEvent(this, 'top', this.__position__.y, v));
+                this.__position__.y = v;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(UIControl.prototype, "left", {
+            get: function () {
+                return this.__position__.x;
+            },
+            set: function (v) {
+                this.$emit('propertyChange', new PropertyChangedEvent(this, 'left', this.__position__.x, v));
+                this.__position__.x = v;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(UIControl.prototype, "position", {
             get: function () {
                 return this.__position__;
             },
             set: function (newPosition) {
                 this.$emit('propertyChange', new PropertyChangedEvent(this, 'position', this.__position__, newPosition));
+                this.top = newPosition.y;
+                this.left = newPosition.x;
                 this.__position__ = newPosition;
-                this.redrawContext();
             },
             enumerable: true,
             configurable: true
@@ -484,19 +535,26 @@ var core;
             enumerable: true,
             configurable: true
         });
+        UIControl.prototype.hasParent = function () {
+            return (isset(this.parent) && this.parent !== null);
+        };
         UIControl.prototype.redrawContext = function (force) {
             if (force === void 0) { force = false; }
             if (!this.isInjected || !force)
                 return false;
+            if (this.drawn)
+                this.remove(false);
             this.$emit('redraw', new UIEvent(this, { 'force': force }));
             this.render();
-            this.parent.redrawContext(force);
+            if (this.hasParent())
+                this.parent.redrawContext(force);
             return true;
         };
         UIControl.prototype._render = function () { };
         UIControl.prototype.render = function () {
             this.$emit('render', new UIEvent(this, null));
             this._render();
+            this._drawn = true;
             this.$emit('rendered', new UIEvent(this, null));
         };
         UIControl.prototype.$$inject = function (parent) {
@@ -505,6 +563,12 @@ var core;
             this.owner.registerElement(this);
             this.$emit('inject', new UIEvent(this, { 'parent': parent }));
             this.render();
+        };
+        UIControl.prototype.remove = function (deleteElement) {
+            if (deleteElement === void 0) { deleteElement = false; }
+            this.context.clearRect(this.position.x, this.position.y, this.width, this.height);
+            if (deleteElement)
+                this.owner.controls.remove(this);
         };
         UIControl.prototype.dispose = function () {
             this.$emit('dispose', new UIEvent(this, null));

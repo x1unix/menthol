@@ -189,7 +189,7 @@ export module core {
                 this.$listeners[ eventName ].triggerEvent(eventArgs);
             }
         }
-        public on(eventName:string, listener:Function) {
+        private addEventListener(eventName:string, listener:Function) {
             if ( !this.hasListeners(eventName) ) {
                 this.$listeners[ eventName ] = new core.EventListenersCollection(this.$owner, eventName);
             }
@@ -197,9 +197,23 @@ export module core {
             return this.$owner;
         }
 
-        public off(eventName:string, listener:Function) {
+        private removeEventListener(eventName:string, listener:Function) {
             if ( !this.hasListeners(eventName) ) return false;
             return this.$listeners[ eventName ].removeEventListener(listener);
+        }
+
+        public on(eventNames:string, listener:Function) {
+            var self = this;
+            eventNames.trim().split(' ').forEach( function(eName) {
+                self.addEventListener(eName, listener);
+            });
+        }
+
+        public off(eventNames:string, listener:Function) {
+            var self = this;
+            eventNames.trim().split(' ').forEach( function(eName) {
+                self.removeEventListener(eName, listener);
+            });
         }
 
     }
@@ -354,7 +368,7 @@ export module core {
             this.items.push(item);
             this.$emit('elementInserted', new CollectionEvent(this,item) );
         }
-        private remove(item:any) {
+        public remove(item:any) {
             var i:number = this.items.indexOf(item);
             if( i > -1) {
                 this.items[i].dispose();
@@ -364,8 +378,8 @@ export module core {
         }
     }
     export class Point {
-        public x:number
-        public y:number
+        public x : number;
+        public y : number;
         public constructor(x:number, y:number) {
             this.x = x;
             this.y = y;
@@ -393,6 +407,13 @@ export module core {
         private $foreColor:string = '#000'
         private $GUID:core.GUID
 
+        
+        private _drawn : boolean = false;
+        
+        public get drawn() : boolean {
+            return this._drawn;
+        }
+
         public get id():core.GUID {
             if( !this.hasId() ) this.$GUID = new core.GUID();
             return this.$GUID;
@@ -404,10 +425,18 @@ export module core {
 
         public constructor(owner:core.Form) {
             super();
+
+            var self = this;
+
             this.owner = owner;
             this.$context = owner.context;
             this.__position__ = new core.Point(0,0);
             this.controls = new core.Collection(this, owner);
+
+            // Redraw element on events
+            this.on('layerUpdate', this._onUpdate);
+            this.on('propertyChange', this._onUpdate);
+            
         }
 
         get context():CanvasRenderingContext2D {
@@ -415,6 +444,12 @@ export module core {
         }
         get isInjected():boolean {
             return this.$injected;
+        }
+
+        private _onUpdate() {
+            console.log('update layer '+this.id);
+            this.remove();
+            this.redrawContext(true);
         }
 
        
@@ -493,6 +528,37 @@ export module core {
         /** 
          * Rest
          */
+
+ 
+        public get top() : number {
+            return this.__position__.y;
+        }
+        public set top(v : number) {
+            this.$emit('propertyChange',
+                new PropertyChangedEvent(
+                    this,
+                    'top',
+                    this.__position__.y,
+                    v
+            ));
+            this.__position__.y = v;
+        }
+
+        public get left() : number {
+            return this.__position__.x;
+        }
+        public set left(v : number) {
+            this.$emit('propertyChange',
+                new PropertyChangedEvent(
+                    this,
+                    'left',
+                    this.__position__.x,
+                    v
+            ));
+            this.__position__.x = v;
+        }
+        
+
         get position():core.Point {
             return this.__position__;
         }
@@ -504,8 +570,10 @@ export module core {
                     this.__position__,
                     newPosition
             ));
+
+            this.top = newPosition.y;
+            this.left = newPosition.x;
             this.__position__ = newPosition;
-            this.redrawContext();
         }
 
         public points():Array<Point> {
@@ -516,28 +584,39 @@ export module core {
 
            return [p1,p2,p3,p4];     
         }
+
         get parent():core.UIControl {
             return this.$parent;
         }
         
+        public hasParent():boolean {
+            return ( isset(this.parent) && this.parent !== null);
+        }
         public redrawContext(force:boolean=false) {
             // Do not redraw element if its not injected of force do
             if( !this.isInjected || !force ) return false;
+
+            // Remove element if it was drawm
+            if( this.drawn ) this.remove(false);
+
             this.$emit('redraw', new UIEvent(this, {'force': force}));
 
             // Redraw self
             this.render();
 
             // Trigger parent to redraw
-            this.parent.redrawContext(force);
+            if( this.hasParent() ) this.parent.redrawContext(force);
+
             return true;
         } 
 
         public _render() {}
+        
 
         public render() {
             this.$emit('render', new UIEvent(this, null));
             this._render();
+            this._drawn = true;
             this.$emit('rendered', new UIEvent(this, null));
         }
         public $$inject(parent:core.UIControl) {
@@ -548,6 +627,18 @@ export module core {
             this.$emit('inject', new UIEvent(this, {'parent': parent}));
             this.render();
         }
+
+        public remove(deleteElement:boolean=false) {
+            this.context.clearRect(
+                this.position.x, 
+                this.position.y, 
+                this.width, 
+                this.height
+            );
+            
+            if( deleteElement ) this.owner.controls.remove(this);
+        }
+
         public dispose() {
             this.$emit('dispose', new UIEvent(this, null));
             this.$injected = false;
