@@ -32,7 +32,6 @@ var ui;
             set: function (newStr) {
                 this.$emit('propertyChange', new core_1.core.PropertyChangedEvent(this, 'text', this.$text, newStr));
                 this.$text = newStr;
-                this.redrawContext();
             },
             enumerable: true,
             configurable: true
@@ -44,7 +43,6 @@ var ui;
             set: function (newVal) {
                 this.$emit('propertyChange', new core_1.core.PropertyChangedEvent(this, 'textAlign', this.$align, newVal));
                 this.$align = newVal;
-                this.redrawContext();
             },
             enumerable: true,
             configurable: true

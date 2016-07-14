@@ -24,7 +24,6 @@ export module ui {
                     newStr
             ));
             this.$text = newStr;
-            this.redrawContext();
         }
 
         get textAlign():string {
@@ -39,7 +38,6 @@ export module ui {
                     newVal
             ));
             this.$align = newVal;
-            this.redrawContext();
         }
 
         public _render() {
