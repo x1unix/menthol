@@ -228,14 +228,16 @@ var core;
         function ConponentMapper(owner) {
             this._locationMap = [];
             this._guidMap = {};
-            for (var x = 1; x <= owner.canvas.width; x++) {
+            this.owner = owner;
+            this.generate();
+        }
+        ConponentMapper.prototype.generate = function () {
+            for (var x = 1; x <= this.owner.canvas.width; x++) {
                 this._locationMap[x] = new Array();
-                for (var y = 1; y <= owner.canvas.height; y++) {
+                for (var y = 1; y <= this.owner.canvas.height; y++) {
                     this._locationMap[x][y] = new Array();
                 }
             }
-        }
-        ConponentMapper.prototype._refreshMap = function () {
         };
         ConponentMapper.prototype._mapElement = function (element) {
             var guid = element.id.toString();
@@ -336,6 +338,7 @@ var core;
             configurable: true
         });
         Form.prototype.redrawContext = function (force) {
+            this._map.generate();
             this.$emit('redraw', new UIEvent(this, { 'force': force }));
         };
         Form.prototype.registerElement = function (element) {
@@ -557,6 +560,7 @@ var core;
         UIControl.prototype.redraw = function () {
             if (!this.isInjected)
                 return false;
+            this.owner.registerElement(this);
             this.$emit('redraw', new UIEvent(this, { 'force': false }));
             this.render();
             return true;
@@ -564,7 +568,7 @@ var core;
         UIControl.prototype._render = function () { };
         UIControl.prototype._drawChildren = function () {
             this.controls.forEach(function _fnDrawChild(e) {
-                e.render();
+                e.redraw();
             });
         };
         UIControl.prototype.render = function () {

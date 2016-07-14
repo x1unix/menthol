@@ -221,18 +221,20 @@ export module core {
     export class ConponentMapper {
         private _locationMap:Array<any> = [];
         private _guidMap = {};
+        public owner:Form
 
         public constructor(owner:core.Form) {
-            for(let x = 1; x <= owner.canvas.width; x++) {
+            this.owner = owner;
+            this.generate();
+        }
+
+        public generate() {
+            for(let x = 1; x <= this.owner.canvas.width; x++) {
                 this._locationMap[x] = new Array();
-                for(let y = 1; y <= owner.canvas.height; y++) {
+                for(let y = 1; y <= this.owner.canvas.height; y++) {
                     this._locationMap[x][y] = new Array();
                 }
             }
-        }
-
-        private _refreshMap() {
-            // TODO: Add components map reload
         }
 
         private _mapElement(element:UIControl) {
@@ -305,6 +307,7 @@ export module core {
 
 
         public redrawContext(force) {
+            this._map.generate();
             this.$emit('redraw', new UIEvent(this, {'force': force}));
         }
 
@@ -431,7 +434,7 @@ export module core {
             return this._drawn;
         }
 
-        public get id():core.GUID {
+        public get id():GUID {
             if( !this.hasId() ) this.$GUID = new core.GUID();
             return this.$GUID;
         }
@@ -440,7 +443,7 @@ export module core {
             return typeof this.$GUID !== 'undefined';
         }
 
-        public constructor(owner:core.Form) {
+        public constructor(owner:Form) {
             super();
 
             var self = this;
@@ -618,6 +621,8 @@ export module core {
             // Do not redraw element if its not injected of force do
             if( !this.isInjected ) return false;
 
+            this.owner.registerElement(this);
+
             // Emit event
             this.$emit('redraw', new UIEvent(this, {'force': false}));
 
@@ -631,7 +636,7 @@ export module core {
         
         private _drawChildren() {
             this.controls.forEach( function _fnDrawChild(e) {
-                e.render();
+                e.redraw();
             });
         }
 
