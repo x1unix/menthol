@@ -44,6 +44,7 @@
     rect.width = 32;
     rect.left = 0;
     rect.top = 0;
+    rect.backgroundColor = 'red';
     app.controls.add(rect);
 
     rect.on('click', function() {
@@ -51,11 +52,12 @@
     })
 
     var button = new kratos.ui.Button(app);
-    button.height = 15;
-    button.width = 48;
     button.left = 128;
     button.top = 128;
     button.text = "Click on me!";
+    button.font.size = 12;
+    button.foreColor = '#fff';
+    
 
     button.on('click', function(event) {
       button.top = button.top + 100;

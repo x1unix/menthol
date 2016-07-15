@@ -18,7 +18,7 @@ var core;
         };
         version.major = 0;
         version.minor = 5;
-        version.patch = 5;
+        version.patch = 8;
         return version;
     }());
     core.version = version;
@@ -218,6 +218,80 @@ var core;
         return EventGenerator;
     }());
     core.EventGenerator = EventGenerator;
+    var Emittable = (function (_super) {
+        __extends(Emittable, _super);
+        function Emittable() {
+            _super.call(this);
+            this.emittable = false;
+        }
+        Emittable.prototype._onChange = function (prop) {
+            if (this.emittable) {
+                this._emit('propertyChange', new PropertyChangedEvent(this, prop, null, null));
+            }
+        };
+        return Emittable;
+    }(EventEmitter));
+    core.Emittable = Emittable;
+    var BoxModelElement = (function (_super) {
+        __extends(BoxModelElement, _super);
+        function BoxModelElement(top, right, bottom, left) {
+            if (top === void 0) { top = 0; }
+            if (right === void 0) { right = 0; }
+            if (bottom === void 0) { bottom = 0; }
+            if (left === void 0) { left = 0; }
+            _super.call(this);
+            this._top = top;
+            this._left = left;
+            this._right = right;
+            this._bottom = bottom;
+        }
+        Object.defineProperty(BoxModelElement.prototype, "top", {
+            get: function () {
+                return this._top;
+            },
+            set: function (value) {
+                this._top = value;
+                this._onChange('top');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(BoxModelElement.prototype, "right", {
+            get: function () {
+                return this._right;
+            },
+            set: function (value) {
+                this._right = value;
+                this._onChange('right');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(BoxModelElement.prototype, "bottom", {
+            get: function () {
+                return this._bottom;
+            },
+            set: function (value) {
+                this._bottom = value;
+                this._onChange('bottom');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(BoxModelElement.prototype, "left", {
+            get: function () {
+                return this._left;
+            },
+            set: function (value) {
+                this._left = value;
+                this._onChange('left');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return BoxModelElement;
+    }(Emittable));
+    core.BoxModelElement = BoxModelElement;
     var FontStyle = (function () {
         function FontStyle(type) {
             this._styleType = type;
@@ -234,7 +308,7 @@ var core;
         __extends(Font, _super);
         function Font(family, size, weight) {
             if (family === void 0) { family = 'sans-serif'; }
-            if (size === void 0) { size = 15; }
+            if (size === void 0) { size = 10; }
             if (weight === void 0) { weight = 400; }
             _super.call(this);
             this.emittable = false;
@@ -496,8 +570,10 @@ var core;
             this._height = 128;
             this._width = 128;
             this._injected = false;
-            this._backgroundColor = '#dedede';
+            this._backgroundColor = 'rgba(0,0,0,0)';
             this._foreColor = '#000';
+            this._padding = new BoxModelElement();
+            this._margin = new BoxModelElement();
             this._font = new Font();
             this._drawn = false;
             var self = this;
@@ -505,15 +581,33 @@ var core;
             this._context = owner.context;
             this.__position__ = new core.Point(0, 0);
             this.controls = new core.Collection(this, owner);
+            function fnOnUpdate() {
+                self._onUpdate();
+            }
+            var propEvent = 'propertyChange';
             this.on('layerUpdate', this._onUpdate);
             this.on('propertyChange', this._onUpdate);
-            this._font.on('propertyChange', function onUpdate() {
-                self._onUpdate();
-            });
+            this._font.on(propEvent, fnOnUpdate);
+            this._padding.on(propEvent, fnOnUpdate);
+            this._margin.on(propEvent, fnOnUpdate);
         }
         Object.defineProperty(UIControl.prototype, "drawn", {
             get: function () {
                 return this._drawn;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(UIControl.prototype, "padding", {
+            get: function () {
+                return this._padding;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(UIControl.prototype, "margin", {
+            get: function () {
+                return this._margin;
             },
             enumerable: true,
             configurable: true
@@ -575,7 +669,6 @@ var core;
             set: function (newColor) {
                 var old = this._foreColor.toString();
                 this._foreColor = newColor;
-                this.context.fillStyle = newColor;
                 this._emit('propertyChange', new PropertyChangedEvent(this, 'foreColor', old, newColor));
             },
             enumerable: true,
@@ -586,9 +679,8 @@ var core;
                 return this._height;
             },
             set: function (newHeight) {
-                var old = newHeight + 0;
                 this._height = newHeight;
-                this._emit('propertyChange', new PropertyChangedEvent(this, 'width', old, newHeight));
+                this._emit('propertyChange', new PropertyChangedEvent(this, 'width', null, newHeight));
             },
             enumerable: true,
             configurable: true
@@ -598,13 +690,18 @@ var core;
                 return this._width;
             },
             set: function (newWidth) {
-                var old = this._width + 0;
                 this._width = newWidth;
-                this._emit('propertyChange', new PropertyChangedEvent(this, 'width', old, newWidth));
+                this._emit('propertyChange', new PropertyChangedEvent(this, 'width', null, newWidth));
             },
             enumerable: true,
             configurable: true
         });
+        UIControl.prototype.getAbsoluteHeight = function () {
+            return this.height;
+        };
+        UIControl.prototype.getAbsoluteWidth = function () {
+            return this.height;
+        };
         Object.defineProperty(UIControl.prototype, "top", {
             get: function () {
                 return this.__position__.y;
@@ -644,7 +741,7 @@ var core;
             configurable: true
         });
         UIControl.prototype.points = function () {
-            var p1 = new Point(this.position.x, this.position.y), p2 = new Point(this.position.x + this.width, this.position.y), p3 = new Point(this.position.x + this.width, this.position.y + this.height), p4 = new Point(this.position.x, this.position.y + this.height);
+            var p1 = new Point(this.position.x, this.position.y), p2 = new Point(this.position.x + this.getAbsoluteWidth(), this.position.y), p3 = new Point(this.position.x + this.getAbsoluteWidth(), this.position.y + this.getAbsoluteHeight()), p4 = new Point(this.position.x, this.position.y + this.getAbsoluteHeight());
             return [p1, p2, p3, p4];
         };
         Object.defineProperty(UIControl.prototype, "parent", {

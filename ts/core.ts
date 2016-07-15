@@ -14,13 +14,11 @@ export module core {
     export class version {
         public static major:number = 0;
         public static minor:number = 5;
-        public static patch:number = 5;
+        public static patch:number = 8;
         public static toString() {
             return [this.major, this.minor, this.patch].join('.');
         }
     }
-
-
 
     export class GUID {
         public static generate():string {
@@ -218,6 +216,71 @@ export module core {
 
     }
 
+    export class Emittable extends EventEmitter {
+        public emittable:boolean;
+        public _onChange(prop:string) {
+            if( this.emittable ) {
+                this._emit('propertyChange', new PropertyChangedEvent(this, prop, null, null) );
+            }
+        }
+
+        public constructor() {
+            super();
+            this.emittable = false;
+        }
+    }
+    export class BoxModelElement extends Emittable{
+        private _top:number;
+        private _right:number;
+        private _bottom:number;
+        private _left:number;
+
+
+        public get top(): number {
+            return this._top;
+        }
+
+        public set top(value: number) {
+            this._top = value;
+            this._onChange('top');
+        }
+
+        public get right(): number {
+            return this._right;
+        }
+
+        public set right(value: number) {
+            this._right = value;
+            this._onChange('right');
+        }
+
+        public get bottom(): number {
+            return this._bottom;
+        }
+
+        public set bottom(value: number) {
+            this._bottom = value;
+            this._onChange('bottom');
+        }
+
+        public get left(): number {
+            return this._left;
+        }
+
+        public set left(value: number) {
+            this._left = value;
+            this._onChange('left');
+        }
+        
+        public constructor(top:number=0, right:number=0, bottom:number=0, left:number=0) {
+            super();
+            this._top = top;
+            this._left = left;
+            this._right = right;
+            this._bottom = bottom;
+        }
+    }
+
     export class FontStyle {
         private _styleType:string;
         public constructor(type:string) {
@@ -298,7 +361,7 @@ export module core {
             return [this.style.toString(), this.weight, this.size+'px/'+this.height+'px', this.family].join(' ');
         }
         
-        public constructor(family:string='sans-serif', size:number=15, weight:number=400) {
+        public constructor(family:string='sans-serif', size:number=10, weight:number=400) {
             super();
             this._family = family;
             this._size = size;
@@ -517,12 +580,14 @@ export module core {
         private _parent:core.UIControl
         private _context:CanvasRenderingContext2D
         public controls:core.Collection
-        private _height:number = 128
-        private _width:number = 128
+        private _height:any = 128
+        private _width:any = 128
         private _injected:boolean = false
-        private _backgroundColor:string = '#dedede'
+        private _backgroundColor:string = 'rgba(0,0,0,0)'
         private _foreColor:string = '#000'
-        private _GUID:core.GUID
+        private _GUID:core.GUID;
+        private _padding:BoxModelElement = new BoxModelElement();
+        private _margin:BoxModelElement = new BoxModelElement();
         private _font:Font = new Font();
 
         
@@ -532,6 +597,17 @@ export module core {
             return this._drawn;
         }
 
+
+        public get padding(): BoxModelElement  {
+            return this._padding;
+        }
+
+
+        public get margin(): BoxModelElement  {
+            return this._margin;
+        }
+        
+        
         public get font() : Font {
             return this._font;
         }
@@ -545,6 +621,7 @@ export module core {
             return typeof this._GUID !== 'undefined';
         }
 
+
         public constructor(owner:Form) {
             super();
 
@@ -555,12 +632,20 @@ export module core {
             this.__position__ = new core.Point(0,0);
             this.controls = new core.Collection(this, owner);
 
+            function fnOnUpdate() {
+                self._onUpdate();
+            }
+
+            var propEvent = 'propertyChange';
+
             // Redraw element on events
             this.on('layerUpdate', this._onUpdate);
             this.on('propertyChange', this._onUpdate);
-            this._font.on('propertyChange', function onUpdate() {
-                self._onUpdate();
-            });
+
+            this._font.on(propEvent, fnOnUpdate);
+            this._padding.on(propEvent, fnOnUpdate);
+            this._margin.on(propEvent, fnOnUpdate);
+
             
         }
 
@@ -604,7 +689,6 @@ export module core {
             var old = this._foreColor.toString();
 
             this._foreColor = newColor;
-            this.context.fillStyle = newColor;
 
             this._emit('propertyChange',
                 new PropertyChangedEvent(
@@ -617,18 +701,17 @@ export module core {
         /**
          * Height
          */
-        get height():number {
+        get height():any {
             return this._height;
         }
-        set height(newHeight:number) {
-            var old = newHeight+0;
+        set height(newHeight:any) {
             this._height = newHeight;
 
             this._emit('propertyChange',
                 new PropertyChangedEvent(
                     this,
                     'width',
-                    old,
+                    null,
                     newHeight
             ));
 
@@ -637,24 +720,31 @@ export module core {
         /**
          * Width
          */
-        get width():number {
+        get width():any {
             return this._width;
         }
-        set width(newWidth:number) {
-            var old = this._width+0;
+        set width(newWidth:any) {
             this._width = newWidth;
 
             this._emit('propertyChange',
                 new PropertyChangedEvent(
                     this,
                     'width',
-                    old,
+                    null,
                     newWidth
             ));
         }
         /** 
          * Rest
          */
+
+        public getAbsoluteHeight() {
+          return this.height;
+        }
+
+        public getAbsoluteWidth() {
+          return this.height;
+        }
 
  
         public get top() : number {
@@ -708,9 +798,9 @@ export module core {
 
         public points():Array<Point> {
             var p1 = new Point(this.position.x, this.position.y),
-                p2 = new Point(this.position.x + this.width, this.position.y),
-                p3 = new Point(this.position.x + this.width, this.position.y + this.height),
-                p4 = new Point(this.position.x, this.position.y + this.height);
+                p2 = new Point(this.position.x + this.getAbsoluteWidth(), this.position.y),
+                p3 = new Point(this.position.x + this.getAbsoluteWidth(), this.position.y + this.getAbsoluteHeight()),
+                p4 = new Point(this.position.x, this.position.y + this.getAbsoluteHeight() );
 
            return [p1,p2,p3,p4];     
         }
