@@ -512,6 +512,7 @@ var core;
         };
         Form.prototype.clear = function () {
             this.context.clearRect(0, 0, this.width, this.height);
+            this._map.generate();
             return this;
         };
         return Form;

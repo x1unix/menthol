@@ -481,6 +481,7 @@ export module core {
 
         public clear():Form {
             this.context.clearRect(0, 0, this.width, this.height);
+            this._map.generate();
             return this;
         }
 
