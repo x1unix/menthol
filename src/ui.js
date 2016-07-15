@@ -22,32 +22,34 @@ var ui;
         __extends(Label, _super);
         function Label() {
             _super.apply(this, arguments);
-            this.$text = 'New Label';
-            this.$align = core_1.core.TextAlign.left;
+            this._text = 'New Label';
+            this._align = core_1.core.TextAlign.left;
         }
         Object.defineProperty(Label.prototype, "text", {
             get: function () {
-                return this.$text;
+                return this._text;
             },
             set: function (newStr) {
-                this.$emit('propertyChange', new core_1.core.PropertyChangedEvent(this, 'text', this.$text, newStr));
-                this.$text = newStr;
+                var old = this._text.toString();
+                this._text = newStr;
+                this._emit('propertyChange', new core_1.core.PropertyChangedEvent(this, 'text', old, newStr));
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(Label.prototype, "textAlign", {
             get: function () {
-                return this.$align;
+                return this._align;
             },
             set: function (newVal) {
-                this.$emit('propertyChange', new core_1.core.PropertyChangedEvent(this, 'textAlign', this.$align, newVal));
-                this.$align = newVal;
+                this._align = newVal;
+                this._emit('propertyChange', new core_1.core.PropertyChangedEvent(this, 'textAlign', null, newVal));
             },
             enumerable: true,
             configurable: true
         });
         Label.prototype._render = function () {
+            this.context.font = this.font.toString();
             this.context.fillText(this.text, this.position.y, this.position.x);
         };
         return Label;
@@ -59,6 +61,7 @@ var ui;
             _super.apply(this, arguments);
         }
         Button.prototype._render = function () {
+            this.context.font = this.font.toString();
             this.context.fillRect(this.position.x, this.position.y, this.width, this.height);
             this.context.fillText(this.text, this.position.x, this.position.y, this.width);
         };

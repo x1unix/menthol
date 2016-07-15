@@ -10,37 +10,40 @@ export module ui {
     
 
     export class Label extends core.UIControl {
-        private $text:string = 'New Label';
-        private $align:string = core.TextAlign.left;
+        private _text:string = 'New Label';
+        private _align:string = core.TextAlign.left;
         get text():string {
-            return this.$text;
+            return this._text;
         }
         set text(newStr:string) {
-            this.$emit('propertyChange',
+            var old = this._text.toString();
+            this._text = newStr;
+            this._emit('propertyChange',
                 new core.PropertyChangedEvent(
                     this,
                     'text',
-                    this.$text,
+                    old,
                     newStr
             ));
-            this.$text = newStr;
         }
 
         get textAlign():string {
-            return this.$align;
+            return this._align;
         }
         set textAlign(newVal:string) {
-            this.$emit('propertyChange',
+            
+            this._align = newVal;
+            this._emit('propertyChange',
                 new core.PropertyChangedEvent(
                     this,
                     'textAlign',
-                    this.$align,
+                    null,
                     newVal
             ));
-            this.$align = newVal;
         }
 
         public _render() {
+            this.context.font = this.font.toString();
             this.context.fillText(this.text, this.position.y, this.position.x);
         }
     } 
@@ -48,6 +51,7 @@ export module ui {
 
     export class Button extends Label {
         public _render() {
+            this.context.font = this.font.toString();
             this.context.fillRect(this.position.x, this.position.y, this.width, this.height);
             this.context.fillText(this.text, this.position.x, this.position.y, this.width);
         }

@@ -10,17 +10,17 @@ export module core {
         p3:Point,
         p4:Point
     }
-    export class BoxModel {
 
-    }
     export class version {
         public static major:number = 0;
-        public static minor:number = 0;
-        public static patch:number = 0;
+        public static minor:number = 5;
+        public static patch:number = 5;
         public static toString() {
             return [this.major, this.minor, this.patch].join('.');
         }
     }
+
+
 
     export class GUID {
         public static generate():string {
@@ -119,87 +119,87 @@ export module core {
     export class EventEmitter {
         public on(eventName:string, listener:Function) {}
         public off(eventName:string, listener:Function) {}
-        public $emit(eventName:string, eventArgs:any){};
-        private $$e:EventGenerator;
+        public _emit(eventName:string, eventArgs:any){};
+        private __e:EventGenerator;
         public constructor() {
-            this.$$e = new core.EventGenerator(this);
+            this.__e = new core.EventGenerator(this);
         }
     } 
 
     export class EventListenersCollection {
-        private $hooks:Array<Function> = []
+        private _hooks:Array<Function> = []
         public eventName:string;
-        private $eventSource:Object;
+        private _eventSource:Object;
 
         public constructor(source:Object, name:string) {
             this.eventName = name;
-            this.$eventSource = source;
+            this._eventSource = source;
         }
 
         public triggerEvent(eventArgs:any) {
             var self = this;
-            this.$hooks.forEach( function(hook) {
-                if( typeof hook == 'function' ) hook.call(self.$eventSource, eventArgs);
+            this._hooks.forEach( function(hook) {
+                if( typeof hook == 'function' ) hook.call(self._eventSource, eventArgs);
             });
         }
 
         public getListenersCount() {
-            return this.$hooks.length;
+            return this._hooks.length;
         }
 
         public addEventListener(eventListener:Function) {
-            this.$hooks.push(eventListener);
+            this._hooks.push(eventListener);
         }
 
         public removeEventListener(eventListener:Function) {
-            var hookId = this.$hooks.indexOf(eventListener);
-            if ( hookId > -1) this.$hooks.splice(hookId, 1);
+            var hookId = this._hooks.indexOf(eventListener);
+            if ( hookId > -1) this._hooks.splice(hookId, 1);
             return (hookId > -1);
         }
     }
 
     export class EventGenerator {
-        private $listeners:Object = {}
-        private $owner:core.EventEmitter
+        private _listeners:Object = {}
+        private _owner:core.EventEmitter
 
         public constructor(eventGenerator:any, inject:Boolean = true) {
-            this.$owner = eventGenerator;
+            this._owner = eventGenerator;
             if(inject) this.inject();
         }
 
         public hasListeners(eventName:string) {
-            return typeof this.$listeners[ eventName ] !== 'undefined';
+            return typeof this._listeners[ eventName ] !== 'undefined';
         }
         
         private inject() {
             var self = this;
-            this.$owner.on = function() {
+            this._owner.on = function() {
                 self.on.apply(self, arguments);
             };
-            this.$owner.off = function() {
+            this._owner.off = function() {
                 self.off.apply(self, arguments);
             };
-            this.$owner.$emit = function() {
+            this._owner._emit = function() {
                 self.emit.apply(self, arguments);
             };
         }
 
         public emit(eventName:string, eventArgs:any) {
             if ( this.hasListeners(eventName) ) {
-                this.$listeners[ eventName ].triggerEvent(eventArgs);
+                this._listeners[ eventName ].triggerEvent(eventArgs);
             }
         }
         private addEventListener(eventName:string, listener:Function) {
             if ( !this.hasListeners(eventName) ) {
-                this.$listeners[ eventName ] = new core.EventListenersCollection(this.$owner, eventName);
+                this._listeners[ eventName ] = new core.EventListenersCollection(this._owner, eventName);
             }
-            this.$listeners[ eventName ].addEventListener(listener);
-            return this.$owner;
+            this._listeners[ eventName ].addEventListener(listener);
+            return this._owner;
         }
 
         private removeEventListener(eventName:string, listener:Function) {
             if ( !this.hasListeners(eventName) ) return false;
-            return this.$listeners[ eventName ].removeEventListener(listener);
+            return this._listeners[ eventName ].removeEventListener(listener);
         }
 
         public on(eventNames:string, listener:Function) {
@@ -218,6 +218,98 @@ export module core {
 
     }
 
+    export class FontStyle {
+        private _styleType:string;
+        public constructor(type:string) {
+            this._styleType = type;
+        }
+        public toString() {
+            return this._styleType.toString();
+        }
+
+        public static normal:FontStyle = new FontStyle('normal');
+        public static italic:FontStyle = new FontStyle('italic');
+    }
+
+
+    export class Font extends EventEmitter{
+        
+        public emittable : boolean = false;
+
+        private _onChange(prop:string) {
+            if( this.emittable ) {
+                this._emit('propertyChange', new PropertyChangedEvent(this, prop, null, null) );
+            }
+        }
+
+        private _height : number;
+
+        public get height(): number {
+            return ( !isset(this._height) || typeof this._height == 'undefined' ) ? (this._size * 1.2) | 0 : this._height;
+        }
+
+        public set height(value: number) {
+            this._height = value;
+            this._onChange('height');
+        }
+            
+
+        private _weight : number;
+        public get weight(): number {
+            return this._weight;
+        }
+
+        public set weight(value: number) {
+            this._weight = value;
+            this._onChange('weight');
+        }
+        
+        
+        private _style : FontStyle;
+        public get style() : FontStyle {
+            return this._style;
+        }
+        public set style(v : FontStyle) {
+            this._style = v;
+            this._onChange('style');
+        }
+        
+
+        private _family : string;
+        public get family() : string {
+            return this._family;
+        }
+        public set family(v : string) {
+            this._family = v;
+            this._onChange('family');
+        }
+
+        
+        private _size : number;
+        public get size() : number {
+            return this._size;
+        }
+        public set size(v : number) {
+            this._size = v;
+            this._onChange('size');
+        }
+
+        public toString() : string {
+            return [this.style.toString(), this.weight, this.size+'px/'+this.height+'px', this.family].join(' ');
+        }
+        
+        public constructor(family:string='sans-serif', size:number=15, weight:number=400) {
+            super();
+            this._family = family;
+            this._size = size;
+            this._weight = weight;
+            this._style = FontStyle.normal;
+        }
+        
+    }
+
+
+
     export class ConponentMapper {
         private _locationMap:Array<any> = [];
         private _guidMap = {};
@@ -228,7 +320,12 @@ export module core {
             this.generate();
         }
 
+        public clear() {
+            this._locationMap.splice(0, this._locationMap.length - 1);
+        }
+
         public generate() {
+            this.clear();
             for(let x = 1; x <= this.owner.canvas.width; x++) {
                 this._locationMap[x] = new Array();
                 for(let y = 1; y <= this.owner.canvas.height; y++) {
@@ -308,7 +405,7 @@ export module core {
 
         public redrawContext(force) {
             this._map.generate();
-            this.$emit('redraw', new UIEvent(this, {'force': force}));
+            this._emit('redraw', new UIEvent(this, {'force': force}));
         }
 
         public registerElement(element:UIControl) {
@@ -342,7 +439,7 @@ export module core {
                 
             });
 
-            this.$emit('drawStart', new UIEvent(this, {}));
+            this._emit('drawStart', new UIEvent(this, {}));
 
             this._map = new core.ConponentMapper(this);
             this.canvas.addEventListener('click', function(event) {
@@ -350,7 +447,7 @@ export module core {
                 try {
                     var target =  self._map.getLocatedId(p);
                     target = ( core.isset(target) && target.length > 0) ? self._map.getElementById(target) : self;
-                    target.$emit('click', new UIMouseEvent(target, event));
+                    target._emit('click', new UIMouseEvent(target, event));
                     
                 } catch(ex) {
                     console.error(ex);
@@ -370,24 +467,24 @@ export module core {
     export class Collection extends EventEmitter {
         private items:UIControl[]
         private collectionHandler:any
-        public $defaultForm:Form
+        public _defaultForm:Form
         public constructor(handler:any, appInstance:Form) {
             super();
             this.collectionHandler = handler;
             this.items = [];
-            this.$defaultForm = appInstance;
+            this._defaultForm = appInstance;
         }
 
         public add(item:any) {
-            item.$$inject(this.collectionHandler);
+            item.__inject(this.collectionHandler);
             this.items.push(item);
-            this.$emit('elementInserted', new CollectionEvent(this,item) );
+            this._emit('elementInserted', new CollectionEvent(this,item) );
         }
         public remove(item:any) {
             var i:number = this.items.indexOf(item);
             if( i > -1) {
                 this.items[i].dispose();
-                this.$emit('elementRemove',new CollectionEvent(this,this.items[i]));
+                this._emit('elementRemove',new CollectionEvent(this,this.items[i]));
                 this.items.splice(i,1);
             }
         }
@@ -417,15 +514,16 @@ export module core {
     export class UIControl extends EventEmitter {
         private __position__:core.Point
         private owner:core.Form
-        private $parent:core.UIControl
-        private $context:CanvasRenderingContext2D
+        private _parent:core.UIControl
+        private _context:CanvasRenderingContext2D
         public controls:core.Collection
-        private $height:number = 128
-        private $width:number = 128
-        private $injected:boolean = false
-        private $backgroundColor:string = '#dedede'
-        private $foreColor:string = '#000'
-        private $GUID:core.GUID
+        private _height:number = 128
+        private _width:number = 128
+        private _injected:boolean = false
+        private _backgroundColor:string = '#dedede'
+        private _foreColor:string = '#000'
+        private _GUID:core.GUID
+        private _font:Font = new Font();
 
         
         private _drawn : boolean = false;
@@ -434,13 +532,17 @@ export module core {
             return this._drawn;
         }
 
+        public get font() : Font {
+            return this._font;
+        }
+
         public get id():GUID {
-            if( !this.hasId() ) this.$GUID = new core.GUID();
-            return this.$GUID;
+            if( !this.hasId() ) this._GUID = new core.GUID();
+            return this._GUID;
         }
 
         public hasId():boolean {
-            return typeof this.$GUID !== 'undefined';
+            return typeof this._GUID !== 'undefined';
         }
 
         public constructor(owner:Form) {
@@ -449,26 +551,29 @@ export module core {
             var self = this;
 
             this.owner = owner;
-            this.$context = owner.context;
+            this._context = owner.context;
             this.__position__ = new core.Point(0,0);
             this.controls = new core.Collection(this, owner);
 
             // Redraw element on events
             this.on('layerUpdate', this._onUpdate);
             this.on('propertyChange', this._onUpdate);
+            this._font.on('propertyChange', function onUpdate() {
+                self._onUpdate();
+            });
             
         }
 
         get context():CanvasRenderingContext2D {
-            return this.$context;
+            return this._context;
         }
         get isInjected():boolean {
-            return this.$injected;
+            return this._injected;
         }
 
         private _onUpdate() {
             if( !this.drawn ) return;
-            this.owner.$emit('redraw', {relatedTarget: this});
+            this.owner._emit('redraw', {relatedTarget: this});
         }
 
        
@@ -476,14 +581,14 @@ export module core {
          * Colors
          */
         get backgroundColor():string {
-            return this.$backgroundColor;
+            return this._backgroundColor;
         }
         set backgroundColor(newColor:string) {
-            var old = this.$backgroundColor.toString();
+            var old = this._backgroundColor.toString();
 
-            this.$backgroundColor = newColor;
+            this._backgroundColor = newColor;
 
-            this.$emit('propertyChange',
+            this._emit('propertyChange',
                 new PropertyChangedEvent(
                     this,
                     'backgroundColor',
@@ -493,15 +598,15 @@ export module core {
         }
 
         get foreColor():string {
-            return this.$foreColor;
+            return this._foreColor;
         }
         set foreColor(newColor:string) {
-            var old = this.$foreColor.toString();
+            var old = this._foreColor.toString();
 
-            this.$foreColor = newColor;
+            this._foreColor = newColor;
             this.context.fillStyle = newColor;
 
-            this.$emit('propertyChange',
+            this._emit('propertyChange',
                 new PropertyChangedEvent(
                     this,
                     'foreColor',
@@ -513,13 +618,13 @@ export module core {
          * Height
          */
         get height():number {
-            return this.$height;
+            return this._height;
         }
         set height(newHeight:number) {
             var old = newHeight+0;
-            this.$height = newHeight;
+            this._height = newHeight;
 
-            this.$emit('propertyChange',
+            this._emit('propertyChange',
                 new PropertyChangedEvent(
                     this,
                     'width',
@@ -533,13 +638,13 @@ export module core {
          * Width
          */
         get width():number {
-            return this.$width;
+            return this._width;
         }
         set width(newWidth:number) {
-            var old = this.$width+0;
-            this.$width = newWidth;
+            var old = this._width+0;
+            this._width = newWidth;
 
-            this.$emit('propertyChange',
+            this._emit('propertyChange',
                 new PropertyChangedEvent(
                     this,
                     'width',
@@ -558,7 +663,7 @@ export module core {
         public set top(v : number) {
             var old = v+0;
             this.__position__.y = v;
-            this.$emit('propertyChange',
+            this._emit('propertyChange',
                 new PropertyChangedEvent(
                     this,
                     'top',
@@ -573,7 +678,7 @@ export module core {
         public set left(v : number) {
             var old = v+0;
             this.__position__.x = v;
-            this.$emit('propertyChange',
+            this._emit('propertyChange',
                 new PropertyChangedEvent(
                     this,
                     'left',
@@ -592,7 +697,7 @@ export module core {
             this.top = newPosition.y;
             this.left = newPosition.x;
             this.__position__ = newPosition;
-            this.$emit('propertyChange',
+            this._emit('propertyChange',
                 new PropertyChangedEvent(
                     this,
                     'position',
@@ -611,7 +716,7 @@ export module core {
         }
 
         get parent():core.UIControl {
-            return this.$parent;
+            return this._parent;
         }
         
         public hasParent():boolean {
@@ -624,7 +729,7 @@ export module core {
             this.owner.registerElement(this);
 
             // Emit event
-            this.$emit('redraw', new UIEvent(this, {'force': false}));
+            this._emit('redraw', new UIEvent(this, {'force': false}));
 
             // Redraw self
             this.render();
@@ -642,20 +747,22 @@ export module core {
 
         public render() {
             this._drawn = false;
-            this.$emit('render', new UIEvent(this, null));
+            this._emit('render', new UIEvent(this, null));
             this._render();
             this._drawChildren();
             this._drawn = true;
-            this.$emit('rendered', new UIEvent(this, null));
+            this._emit('rendered', new UIEvent(this, null));
         }
        
 
-        public $$inject(parent:core.UIControl) {
-            this.$parent = parent;
-            this.$injected = true;
+        public __inject(parent:core.UIControl) {
+            this._parent = parent;
+            this._injected = true;
+
+            this._font.emittable = true;
 
             this.owner.registerElement(this);
-            this.$emit('inject', new UIEvent(this, {'parent': parent}));
+            this._emit('inject', new UIEvent(this, {'parent': parent}));
             this.render();
         }
 
@@ -665,8 +772,8 @@ export module core {
         }
 
         public dispose() {
-            this.$emit('dispose', new UIEvent(this, null));
-            this.$injected = false;
+            this._emit('dispose', new UIEvent(this, null));
+            this._injected = false;
         }
         
     }

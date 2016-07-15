@@ -10,12 +10,6 @@ var core;
         return typeof e !== 'undefined';
     }
     core.isset = isset;
-    var BoxModel = (function () {
-        function BoxModel() {
-        }
-        return BoxModel;
-    }());
-    core.BoxModel = BoxModel;
     var version = (function () {
         function version() {
         }
@@ -23,8 +17,8 @@ var core;
             return [this.major, this.minor, this.patch].join('.');
         };
         version.major = 0;
-        version.minor = 0;
-        version.patch = 0;
+        version.minor = 5;
+        version.patch = 5;
         return version;
     }());
     core.version = version;
@@ -132,38 +126,38 @@ var core;
     core.CollectionEvent = CollectionEvent;
     var EventEmitter = (function () {
         function EventEmitter() {
-            this.$$e = new core.EventGenerator(this);
+            this.__e = new core.EventGenerator(this);
         }
         EventEmitter.prototype.on = function (eventName, listener) { };
         EventEmitter.prototype.off = function (eventName, listener) { };
-        EventEmitter.prototype.$emit = function (eventName, eventArgs) { };
+        EventEmitter.prototype._emit = function (eventName, eventArgs) { };
         ;
         return EventEmitter;
     }());
     core.EventEmitter = EventEmitter;
     var EventListenersCollection = (function () {
         function EventListenersCollection(source, name) {
-            this.$hooks = [];
+            this._hooks = [];
             this.eventName = name;
-            this.$eventSource = source;
+            this._eventSource = source;
         }
         EventListenersCollection.prototype.triggerEvent = function (eventArgs) {
             var self = this;
-            this.$hooks.forEach(function (hook) {
+            this._hooks.forEach(function (hook) {
                 if (typeof hook == 'function')
-                    hook.call(self.$eventSource, eventArgs);
+                    hook.call(self._eventSource, eventArgs);
             });
         };
         EventListenersCollection.prototype.getListenersCount = function () {
-            return this.$hooks.length;
+            return this._hooks.length;
         };
         EventListenersCollection.prototype.addEventListener = function (eventListener) {
-            this.$hooks.push(eventListener);
+            this._hooks.push(eventListener);
         };
         EventListenersCollection.prototype.removeEventListener = function (eventListener) {
-            var hookId = this.$hooks.indexOf(eventListener);
+            var hookId = this._hooks.indexOf(eventListener);
             if (hookId > -1)
-                this.$hooks.splice(hookId, 1);
+                this._hooks.splice(hookId, 1);
             return (hookId > -1);
         };
         return EventListenersCollection;
@@ -172,42 +166,42 @@ var core;
     var EventGenerator = (function () {
         function EventGenerator(eventGenerator, inject) {
             if (inject === void 0) { inject = true; }
-            this.$listeners = {};
-            this.$owner = eventGenerator;
+            this._listeners = {};
+            this._owner = eventGenerator;
             if (inject)
                 this.inject();
         }
         EventGenerator.prototype.hasListeners = function (eventName) {
-            return typeof this.$listeners[eventName] !== 'undefined';
+            return typeof this._listeners[eventName] !== 'undefined';
         };
         EventGenerator.prototype.inject = function () {
             var self = this;
-            this.$owner.on = function () {
+            this._owner.on = function () {
                 self.on.apply(self, arguments);
             };
-            this.$owner.off = function () {
+            this._owner.off = function () {
                 self.off.apply(self, arguments);
             };
-            this.$owner.$emit = function () {
+            this._owner._emit = function () {
                 self.emit.apply(self, arguments);
             };
         };
         EventGenerator.prototype.emit = function (eventName, eventArgs) {
             if (this.hasListeners(eventName)) {
-                this.$listeners[eventName].triggerEvent(eventArgs);
+                this._listeners[eventName].triggerEvent(eventArgs);
             }
         };
         EventGenerator.prototype.addEventListener = function (eventName, listener) {
             if (!this.hasListeners(eventName)) {
-                this.$listeners[eventName] = new core.EventListenersCollection(this.$owner, eventName);
+                this._listeners[eventName] = new core.EventListenersCollection(this._owner, eventName);
             }
-            this.$listeners[eventName].addEventListener(listener);
-            return this.$owner;
+            this._listeners[eventName].addEventListener(listener);
+            return this._owner;
         };
         EventGenerator.prototype.removeEventListener = function (eventName, listener) {
             if (!this.hasListeners(eventName))
                 return false;
-            return this.$listeners[eventName].removeEventListener(listener);
+            return this._listeners[eventName].removeEventListener(listener);
         };
         EventGenerator.prototype.on = function (eventNames, listener) {
             var self = this;
@@ -224,6 +218,97 @@ var core;
         return EventGenerator;
     }());
     core.EventGenerator = EventGenerator;
+    var FontStyle = (function () {
+        function FontStyle(type) {
+            this._styleType = type;
+        }
+        FontStyle.prototype.toString = function () {
+            return this._styleType.toString();
+        };
+        FontStyle.normal = new FontStyle('normal');
+        FontStyle.italic = new FontStyle('italic');
+        return FontStyle;
+    }());
+    core.FontStyle = FontStyle;
+    var Font = (function (_super) {
+        __extends(Font, _super);
+        function Font(family, size, weight) {
+            if (family === void 0) { family = 'sans-serif'; }
+            if (size === void 0) { size = 15; }
+            if (weight === void 0) { weight = 400; }
+            _super.call(this);
+            this.emittable = false;
+            this._family = family;
+            this._size = size;
+            this._weight = weight;
+            this._style = FontStyle.normal;
+        }
+        Font.prototype._onChange = function (prop) {
+            if (this.emittable) {
+                this._emit('propertyChange', new PropertyChangedEvent(this, prop, null, null));
+            }
+        };
+        Object.defineProperty(Font.prototype, "height", {
+            get: function () {
+                return (!isset(this._height) || typeof this._height == 'undefined') ? (this._size * 1.2) | 0 : this._height;
+            },
+            set: function (value) {
+                this._height = value;
+                this._onChange('height');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Font.prototype, "weight", {
+            get: function () {
+                return this._weight;
+            },
+            set: function (value) {
+                this._weight = value;
+                this._onChange('weight');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Font.prototype, "style", {
+            get: function () {
+                return this._style;
+            },
+            set: function (v) {
+                this._style = v;
+                this._onChange('style');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Font.prototype, "family", {
+            get: function () {
+                return this._family;
+            },
+            set: function (v) {
+                this._family = v;
+                this._onChange('family');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Font.prototype, "size", {
+            get: function () {
+                return this._size;
+            },
+            set: function (v) {
+                this._size = v;
+                this._onChange('size');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Font.prototype.toString = function () {
+            return [this.style.toString(), this.weight, this.size + 'px/' + this.height + 'px', this.family].join(' ');
+        };
+        return Font;
+    }(EventEmitter));
+    core.Font = Font;
     var ConponentMapper = (function () {
         function ConponentMapper(owner) {
             this._locationMap = [];
@@ -231,7 +316,11 @@ var core;
             this.owner = owner;
             this.generate();
         }
+        ConponentMapper.prototype.clear = function () {
+            this._locationMap.splice(0, this._locationMap.length - 1);
+        };
         ConponentMapper.prototype.generate = function () {
+            this.clear();
             for (var x = 1; x <= this.owner.canvas.width; x++) {
                 this._locationMap[x] = new Array();
                 for (var y = 1; y <= this.owner.canvas.height; y++) {
@@ -283,14 +372,14 @@ var core;
             this.controls = new core.Collection(null, this);
             this.controls.on('elementInserted', function (item) {
             });
-            this.$emit('drawStart', new UIEvent(this, {}));
+            this._emit('drawStart', new UIEvent(this, {}));
             this._map = new core.ConponentMapper(this);
             this.canvas.addEventListener('click', function (event) {
                 var p = new Point(event.layerX, event.layerY);
                 try {
                     var target = self._map.getLocatedId(p);
                     target = (core.isset(target) && target.length > 0) ? self._map.getElementById(target) : self;
-                    target.$emit('click', new UIMouseEvent(target, event));
+                    target._emit('click', new UIMouseEvent(target, event));
                 }
                 catch (ex) {
                     console.error(ex);
@@ -339,7 +428,7 @@ var core;
         });
         Form.prototype.redrawContext = function (force) {
             this._map.generate();
-            this.$emit('redraw', new UIEvent(this, { 'force': force }));
+            this._emit('redraw', new UIEvent(this, { 'force': force }));
         };
         Form.prototype.registerElement = function (element) {
             this.mapper.register(element);
@@ -360,18 +449,18 @@ var core;
             _super.call(this);
             this.collectionHandler = handler;
             this.items = [];
-            this.$defaultForm = appInstance;
+            this._defaultForm = appInstance;
         }
         Collection.prototype.add = function (item) {
-            item.$$inject(this.collectionHandler);
+            item.__inject(this.collectionHandler);
             this.items.push(item);
-            this.$emit('elementInserted', new CollectionEvent(this, item));
+            this._emit('elementInserted', new CollectionEvent(this, item));
         };
         Collection.prototype.remove = function (item) {
             var i = this.items.indexOf(item);
             if (i > -1) {
                 this.items[i].dispose();
-                this.$emit('elementRemove', new CollectionEvent(this, this.items[i]));
+                this._emit('elementRemove', new CollectionEvent(this, this.items[i]));
                 this.items.splice(i, 1);
             }
         };
@@ -404,19 +493,23 @@ var core;
         __extends(UIControl, _super);
         function UIControl(owner) {
             _super.call(this);
-            this.$height = 128;
-            this.$width = 128;
-            this.$injected = false;
-            this.$backgroundColor = '#dedede';
-            this.$foreColor = '#000';
+            this._height = 128;
+            this._width = 128;
+            this._injected = false;
+            this._backgroundColor = '#dedede';
+            this._foreColor = '#000';
+            this._font = new Font();
             this._drawn = false;
             var self = this;
             this.owner = owner;
-            this.$context = owner.context;
+            this._context = owner.context;
             this.__position__ = new core.Point(0, 0);
             this.controls = new core.Collection(this, owner);
             this.on('layerUpdate', this._onUpdate);
             this.on('propertyChange', this._onUpdate);
+            this._font.on('propertyChange', function onUpdate() {
+                self._onUpdate();
+            });
         }
         Object.defineProperty(UIControl.prototype, "drawn", {
             get: function () {
@@ -425,28 +518,35 @@ var core;
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(UIControl.prototype, "font", {
+            get: function () {
+                return this._font;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(UIControl.prototype, "id", {
             get: function () {
                 if (!this.hasId())
-                    this.$GUID = new core.GUID();
-                return this.$GUID;
+                    this._GUID = new core.GUID();
+                return this._GUID;
             },
             enumerable: true,
             configurable: true
         });
         UIControl.prototype.hasId = function () {
-            return typeof this.$GUID !== 'undefined';
+            return typeof this._GUID !== 'undefined';
         };
         Object.defineProperty(UIControl.prototype, "context", {
             get: function () {
-                return this.$context;
+                return this._context;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(UIControl.prototype, "isInjected", {
             get: function () {
-                return this.$injected;
+                return this._injected;
             },
             enumerable: true,
             configurable: true
@@ -454,53 +554,53 @@ var core;
         UIControl.prototype._onUpdate = function () {
             if (!this.drawn)
                 return;
-            this.owner.$emit('redraw', { relatedTarget: this });
+            this.owner._emit('redraw', { relatedTarget: this });
         };
         Object.defineProperty(UIControl.prototype, "backgroundColor", {
             get: function () {
-                return this.$backgroundColor;
+                return this._backgroundColor;
             },
             set: function (newColor) {
-                var old = this.$backgroundColor.toString();
-                this.$backgroundColor = newColor;
-                this.$emit('propertyChange', new PropertyChangedEvent(this, 'backgroundColor', old, newColor));
+                var old = this._backgroundColor.toString();
+                this._backgroundColor = newColor;
+                this._emit('propertyChange', new PropertyChangedEvent(this, 'backgroundColor', old, newColor));
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(UIControl.prototype, "foreColor", {
             get: function () {
-                return this.$foreColor;
+                return this._foreColor;
             },
             set: function (newColor) {
-                var old = this.$foreColor.toString();
-                this.$foreColor = newColor;
+                var old = this._foreColor.toString();
+                this._foreColor = newColor;
                 this.context.fillStyle = newColor;
-                this.$emit('propertyChange', new PropertyChangedEvent(this, 'foreColor', old, newColor));
+                this._emit('propertyChange', new PropertyChangedEvent(this, 'foreColor', old, newColor));
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(UIControl.prototype, "height", {
             get: function () {
-                return this.$height;
+                return this._height;
             },
             set: function (newHeight) {
                 var old = newHeight + 0;
-                this.$height = newHeight;
-                this.$emit('propertyChange', new PropertyChangedEvent(this, 'width', old, newHeight));
+                this._height = newHeight;
+                this._emit('propertyChange', new PropertyChangedEvent(this, 'width', old, newHeight));
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(UIControl.prototype, "width", {
             get: function () {
-                return this.$width;
+                return this._width;
             },
             set: function (newWidth) {
-                var old = this.$width + 0;
-                this.$width = newWidth;
-                this.$emit('propertyChange', new PropertyChangedEvent(this, 'width', old, newWidth));
+                var old = this._width + 0;
+                this._width = newWidth;
+                this._emit('propertyChange', new PropertyChangedEvent(this, 'width', old, newWidth));
             },
             enumerable: true,
             configurable: true
@@ -512,7 +612,7 @@ var core;
             set: function (v) {
                 var old = v + 0;
                 this.__position__.y = v;
-                this.$emit('propertyChange', new PropertyChangedEvent(this, 'top', old, v));
+                this._emit('propertyChange', new PropertyChangedEvent(this, 'top', old, v));
             },
             enumerable: true,
             configurable: true
@@ -524,7 +624,7 @@ var core;
             set: function (v) {
                 var old = v + 0;
                 this.__position__.x = v;
-                this.$emit('propertyChange', new PropertyChangedEvent(this, 'left', old, v));
+                this._emit('propertyChange', new PropertyChangedEvent(this, 'left', old, v));
             },
             enumerable: true,
             configurable: true
@@ -538,7 +638,7 @@ var core;
                 this.top = newPosition.y;
                 this.left = newPosition.x;
                 this.__position__ = newPosition;
-                this.$emit('propertyChange', new PropertyChangedEvent(this, 'position', old, newPosition));
+                this._emit('propertyChange', new PropertyChangedEvent(this, 'position', old, newPosition));
             },
             enumerable: true,
             configurable: true
@@ -549,7 +649,7 @@ var core;
         };
         Object.defineProperty(UIControl.prototype, "parent", {
             get: function () {
-                return this.$parent;
+                return this._parent;
             },
             enumerable: true,
             configurable: true
@@ -561,7 +661,7 @@ var core;
             if (!this.isInjected)
                 return false;
             this.owner.registerElement(this);
-            this.$emit('redraw', new UIEvent(this, { 'force': false }));
+            this._emit('redraw', new UIEvent(this, { 'force': false }));
             this.render();
             return true;
         };
@@ -573,17 +673,18 @@ var core;
         };
         UIControl.prototype.render = function () {
             this._drawn = false;
-            this.$emit('render', new UIEvent(this, null));
+            this._emit('render', new UIEvent(this, null));
             this._render();
             this._drawChildren();
             this._drawn = true;
-            this.$emit('rendered', new UIEvent(this, null));
+            this._emit('rendered', new UIEvent(this, null));
         };
-        UIControl.prototype.$$inject = function (parent) {
-            this.$parent = parent;
-            this.$injected = true;
+        UIControl.prototype.__inject = function (parent) {
+            this._parent = parent;
+            this._injected = true;
+            this._font.emittable = true;
             this.owner.registerElement(this);
-            this.$emit('inject', new UIEvent(this, { 'parent': parent }));
+            this._emit('inject', new UIEvent(this, { 'parent': parent }));
             this.render();
         };
         UIControl.prototype.remove = function () {
@@ -591,8 +692,8 @@ var core;
             parent.controls.remove(this);
         };
         UIControl.prototype.dispose = function () {
-            this.$emit('dispose', new UIEvent(this, null));
-            this.$injected = false;
+            this._emit('dispose', new UIEvent(this, null));
+            this._injected = false;
         };
         return UIControl;
     }(EventEmitter));
