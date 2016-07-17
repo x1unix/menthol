@@ -75,7 +75,9 @@ export class Form extends EventEmitter {
             this._emit('drawStart', new UIEvent(this, {}));
 
             this._map = new ComponentMapper(this);
-            this.canvas.addEventListener('click', function(event) {
+
+            // Mouse events
+            this.canvas.addEventListener('click contextmenu dblclick mousedown mouseup mouseover mouseout mousemove', function(event:MouseEvent) {
                 var p = new Point(event.layerX, event.layerY);
 
                 // Emit event to frame
@@ -85,7 +87,9 @@ export class Form extends EventEmitter {
                 self.controls.broadcast(event, function(t,e) {
                     return new UIMouseEvent(t, e);
                 }, true, p);
-                
+
+                // Prevent default
+                return false;
             });
 
             this.on('redraw', function() {

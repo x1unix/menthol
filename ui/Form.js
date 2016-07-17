@@ -25,12 +25,13 @@ var Form = (function (_super) {
         });
         this._emit('drawStart', new events_1.UIEvent(this, {}));
         this._map = new ComponentMapper_1.ComponentMapper(this);
-        this.canvas.addEventListener('click', function (event) {
+        this.canvas.addEventListener('click contextmenu dblclick mousedown mouseup mouseover mouseout mousemove', function (event) {
             var p = new Point_1.Point(event.layerX, event.layerY);
             self._emit('click', new events_1.UIMouseEvent(self, event));
             self.controls.broadcast(event, function (t, e) {
                 return new events_1.UIMouseEvent(t, e);
             }, true, p);
+            return false;
         });
         this.on('redraw', function () {
             this.clear();
