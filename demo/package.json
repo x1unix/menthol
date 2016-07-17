@@ -1,0 +1,23 @@
+{
+  "name": "kratos-starter-pack",
+  "version": "1.0.0",
+  "description": "Starter pack for tutorial in Kratos",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+      "typescript": "*",
+      "gulp": "*",
+      "gulp-uglify": "*",
+      "browserify":"*",
+      "gulp-typescript": "*",
+      "gulp-concat": "*",
+      "vinyl-source-stream": "*",
+      "vinyl-buffer": "*",
+      "gulp-util": "*",
+      "vinyl-transform": "*"
+  }
+}
