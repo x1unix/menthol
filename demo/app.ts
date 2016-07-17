@@ -1,4 +1,4 @@
-// In this example were used local libraries.
+// In this example we use local libraries from starter kit.
 // If you're using npm, import from 'kratos/ui'
 
 import {Form} from '../ui';
@@ -18,7 +18,7 @@ app.on('click', function() {
 
 // Rectangle
 var rect = new Rectangle(app);
-rect.height = 32;
+rect.height = 32
 rect.width = 32;
 rect.left = 0;
 rect.top = 0;
