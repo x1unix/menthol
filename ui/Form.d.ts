@@ -1,4 +1,5 @@
 import { EventEmitter } from '../events';
+import { Version } from '../helpers';
 import { UIComponent } from './UIComponent';
 import { ComponentMapper } from './ComponentMapper';
 import { Collection } from './types/Collection';
@@ -7,6 +8,7 @@ export declare class Form extends EventEmitter {
     controls: Collection;
     canvas: HTMLCanvasElement;
     private _map;
+    version: Version;
     height: number;
     width: number;
     context: CanvasRenderingContext2D;

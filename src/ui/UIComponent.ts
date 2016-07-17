@@ -95,6 +95,17 @@ export class UIComponent extends EventEmitter {
             this.owner._emit('redraw', {relatedTarget: this});
         }
 
+        /**
+         * If point is in bounds of element
+         * 
+         * @param {Point} location
+         * @returns {boolean}
+         */
+        public inBoundsOf(location:Point) {
+            var points = this.points();
+            return (location.x >= points[0].x) && (location.x <= points[1].x) && (location.y >= points[0].y) && (location.y <= points[2].y);
+        }
+
        
         /**
          * Colors

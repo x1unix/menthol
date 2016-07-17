@@ -2,6 +2,8 @@ import {UIComponent} from '../UIComponent';
 import {Form} from '../Form';
 import {EventEmitter} from '../../events';
 import {CollectionEvent} from '../../events';
+import {Event} from '../../events';
+import {Point} from './Point';
 
 export class Collection extends EventEmitter {
         private items:UIComponent[]
@@ -30,5 +32,20 @@ export class Collection extends EventEmitter {
 
         public forEach(callback:Function) {
             this.items.forEach.call(this.items, callback);
-        } 
+        }
+
+        public broadcast(domEvent:MouseEvent, eventConstructor:Function, checkBounds:boolean=true, point:Point=new Point(0,0)) {
+            this.forEach( function broadcastEvent(e:UIComponent) {
+                var inBounds:boolean = (checkBounds) ? e.inBoundsOf(point) : true;
+
+                if( inBounds ) {
+                    e._emit(domEvent.type, eventConstructor(domEvent.type, e));
+                }
+
+                var checkBoundsRecursive = checkBounds;
+                if( inBounds ) checkBoundsRecursive = false; 
+                e.controls.broadcast(domEvent, eventConstructor, checkBoundsRecursive, point);
+
+            });
+        }
     }

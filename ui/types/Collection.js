@@ -6,6 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var events_1 = require('../../events');
 var events_2 = require('../../events');
+var Point_1 = require('./Point');
 var Collection = (function (_super) {
     __extends(Collection, _super);
     function Collection(handler, appInstance) {
@@ -29,6 +30,20 @@ var Collection = (function (_super) {
     };
     Collection.prototype.forEach = function (callback) {
         this.items.forEach.call(this.items, callback);
+    };
+    Collection.prototype.broadcast = function (domEvent, eventConstructor, checkBounds, point) {
+        if (checkBounds === void 0) { checkBounds = true; }
+        if (point === void 0) { point = new Point_1.Point(0, 0); }
+        this.forEach(function broadcastEvent(e) {
+            var inBounds = (checkBounds) ? e.inBoundsOf(point) : true;
+            if (inBounds) {
+                e._emit(domEvent.type, eventConstructor(domEvent.type, e));
+            }
+            var checkBoundsRecursive = checkBounds;
+            if (inBounds)
+                checkBoundsRecursive = false;
+            e.controls.broadcast(domEvent, eventConstructor, checkBoundsRecursive, point);
+        });
     };
     return Collection;
 }(events_1.EventEmitter));

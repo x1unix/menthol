@@ -13,6 +13,7 @@ var Form = (function (_super) {
     __extends(Form, _super);
     function Form(handler, bootstrap) {
         _super.call(this);
+        this.version = new helpers_1.Version(0, 4, 0);
         var self = this;
         this.element = handler;
         this.canvas = document.createElement('canvas');
@@ -26,14 +27,10 @@ var Form = (function (_super) {
         this._map = new ComponentMapper_1.ComponentMapper(this);
         this.canvas.addEventListener('click', function (event) {
             var p = new Point_1.Point(event.layerX, event.layerY);
-            try {
-                var target = self._map.getLocatedId(p);
-                target = (helpers_1.isset(target) && target.length > 0) ? self._map.getElementById(target) : self;
-                target._emit('click', new events_1.UIMouseEvent(target, event));
-            }
-            catch (ex) {
-                console.error(ex);
-            }
+            self._emit('click', new events_1.UIMouseEvent(self, event));
+            self.controls.broadcast(event, function (t, e) {
+                return new events_1.UIMouseEvent(t, e);
+            }, true, p);
         });
         this.on('redraw', function () {
             this.clear();
@@ -77,7 +74,6 @@ var Form = (function (_super) {
         configurable: true
     });
     Form.prototype.redrawContext = function (force) {
-        this._map.generate();
         this._emit('redraw', new events_1.UIEvent(this, { 'force': force }));
     };
     Form.prototype.registerElement = function (element) {
@@ -88,7 +84,6 @@ var Form = (function (_super) {
     };
     Form.prototype.clear = function () {
         this.context.clearRect(0, 0, this.width, this.height);
-        this._map.generate();
         return this;
     };
     return Form;

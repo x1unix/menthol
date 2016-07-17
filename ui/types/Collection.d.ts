@@ -1,5 +1,6 @@
 import { Form } from '../Form';
 import { EventEmitter } from '../../events';
+import { Point } from './Point';
 export declare class Collection extends EventEmitter {
     private items;
     private collectionHandler;
@@ -8,4 +9,5 @@ export declare class Collection extends EventEmitter {
     add(item: any): void;
     remove(item: any): void;
     forEach(callback: Function): void;
+    broadcast(domEvent: MouseEvent, eventConstructor: Function, checkBounds?: boolean, point?: Point): void;
 }

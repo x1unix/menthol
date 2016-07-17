@@ -7,10 +7,11 @@ import {ComponentMapper} from './ComponentMapper';
 import {Collection} from './types/Collection';
 
 export class Form extends EventEmitter {
-        private element:HTMLElement
-        public controls:Collection
-        public canvas:HTMLCanvasElement
-        private _map: ComponentMapper
+        private element:HTMLElement;
+        public controls:Collection;
+        public canvas:HTMLCanvasElement;
+        private _map: ComponentMapper;
+        public version:Version = new Version(0,4,0);
 
         public get height() : number {
             return this.canvas.height;
@@ -37,7 +38,6 @@ export class Form extends EventEmitter {
 
 
         public redrawContext(force) {
-            this._map.generate();
             this._emit('redraw', new UIEvent(this, {'force': force}));
         }
 
@@ -51,7 +51,6 @@ export class Form extends EventEmitter {
 
         public clear():Form {
             this.context.clearRect(0, 0, this.width, this.height);
-            this._map.generate();
             return this;
         }
 
@@ -78,14 +77,15 @@ export class Form extends EventEmitter {
             this._map = new ComponentMapper(this);
             this.canvas.addEventListener('click', function(event) {
                 var p = new Point(event.layerX, event.layerY);
-                try {
-                    var target =  self._map.getLocatedId(p);
-                    target = ( isset(target) && target.length > 0) ? self._map.getElementById(target) : self;
-                    target._emit('click', new UIMouseEvent(target, event));
-                    
-                } catch(ex) {
-                    console.error(ex);
-                }
+
+                // Emit event to frame
+                self._emit('click', new UIMouseEvent(self, event));
+
+                // Broadcast to children
+                self.controls.broadcast(event, function(t,e) {
+                    return new UIMouseEvent(t, e);
+                }, true, p);
+                
             });
 
             this.on('redraw', function() {

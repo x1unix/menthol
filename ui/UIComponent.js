@@ -98,6 +98,10 @@ var UIComponent = (function (_super) {
             return;
         this.owner._emit('redraw', { relatedTarget: this });
     };
+    UIComponent.prototype.inBoundsOf = function (location) {
+        var points = this.points();
+        return (location.x >= points[0].x) && (location.x <= points[1].x) && (location.y >= points[0].y) && (location.y <= points[2].y);
+    };
     Object.defineProperty(UIComponent.prototype, "backgroundColor", {
         get: function () {
             return this._backgroundColor;

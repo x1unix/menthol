@@ -31,6 +31,7 @@ export declare class UIComponent extends EventEmitter {
     context: CanvasRenderingContext2D;
     isInjected: boolean;
     private _onUpdate();
+    inBoundsOf(location: Point): boolean;
     backgroundColor: string;
     foreColor: string;
     height: any;
