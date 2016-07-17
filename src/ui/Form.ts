@@ -61,6 +61,15 @@ export class Form extends EventEmitter {
 
             this.element = handler;
             this.canvas = document.createElement('canvas');
+            this.canvas.tabIndex = 0;
+            this.canvas.focus();
+
+
+            Object.defineProperty(this.canvas,'form',{
+                value: self,
+                enumerable: true,
+                configurable: true
+            });
 
             if(bootstrap) bootstrap.call(self, handler);
 
@@ -75,22 +84,6 @@ export class Form extends EventEmitter {
             this._emit('drawStart', new UIEvent(this, {}));
 
             this._map = new ComponentMapper(this);
-
-            // Mouse events
-            this.canvas.addEventListener('click contextmenu dblclick mousedown mouseup mouseover mouseout mousemove', function(event:MouseEvent) {
-                var p = new Point(event.layerX, event.layerY);
-
-                // Emit event to frame
-                self._emit('click', new UIMouseEvent(self, event));
-
-                // Broadcast to children
-                self.controls.broadcast(event, function(t,e) {
-                    return new UIMouseEvent(t, e);
-                }, true, p);
-
-                // Prevent default
-                return false;
-            });
 
             this.on('redraw', function() {
                 this.clear();

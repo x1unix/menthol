@@ -9,5 +9,5 @@ export declare class Collection extends EventEmitter {
     add(item: any): void;
     remove(item: any): void;
     forEach(callback: Function): void;
-    broadcast(domEvent: MouseEvent, eventConstructor: Function, checkBounds?: boolean, point?: Point): void;
+    broadcast(domEvent: UIEvent, eventConstructor: Function, checkBounds?: boolean, point?: Point): void;
 }

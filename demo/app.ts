@@ -13,7 +13,7 @@ var app = new Form( document.getElementById('app'), function() {
 
 // Add global event listener
 app.on('click', function() {
-    alert('canvas form click!');
+    console.log('canvas form click!');
 });
 
 // Rectangle
@@ -29,7 +29,7 @@ app.controls.add(rect);
 
 rect.on('click', function() {
     alert('rect click');
-})
+});
 
 // Button
 var button = new Button(app);
@@ -41,8 +41,16 @@ button.foreColor = '#fff';
 
 
 button.on('click', function(event) {
-    button.top = button.top + 100;
+    button.top = 10;
+    button.backgroundColor = "#ff3232";
+    button.foreColor = "#000";
 });
+
+button.on('mousemove', function(event) {
+    button.backgroundColor = "#cecece";
+    button.foreColor = "#000";
+});
+
 app.controls.add(button);
 
 

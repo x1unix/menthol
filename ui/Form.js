@@ -6,7 +6,6 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var events_1 = require('../events');
 var helpers_1 = require('../helpers');
-var Point_1 = require('./types/Point');
 var ComponentMapper_1 = require('./ComponentMapper');
 var Collection_1 = require('./types/Collection');
 var Form = (function (_super) {
@@ -17,6 +16,13 @@ var Form = (function (_super) {
         var self = this;
         this.element = handler;
         this.canvas = document.createElement('canvas');
+        this.canvas.tabIndex = 0;
+        this.canvas.focus();
+        Object.defineProperty(this.canvas, 'form', {
+            value: self,
+            enumerable: true,
+            configurable: true
+        });
         if (bootstrap)
             bootstrap.call(self, handler);
         this.element.appendChild(this.canvas);
@@ -25,14 +31,6 @@ var Form = (function (_super) {
         });
         this._emit('drawStart', new events_1.UIEvent(this, {}));
         this._map = new ComponentMapper_1.ComponentMapper(this);
-        this.canvas.addEventListener('click contextmenu dblclick mousedown mouseup mouseover mouseout mousemove', function (event) {
-            var p = new Point_1.Point(event.layerX, event.layerY);
-            self._emit('click', new events_1.UIMouseEvent(self, event));
-            self.controls.broadcast(event, function (t, e) {
-                return new events_1.UIMouseEvent(t, e);
-            }, true, p);
-            return false;
-        });
         this.on('redraw', function () {
             this.clear();
             this.controls.forEach(function (e) {

@@ -10,4 +10,5 @@ export {EventListenersCollection} from './event/EventListenersCollection';
 export {CollectionEvent} from './event/events/CollectionEvent';
 export {PropertyChangedEvent} from './event/events/PropertyChangedEvent';
 export {UIEvent} from './event/events/UIEvent';
+export {UICommonEvent} from './event/events/UICommonEvent';
 export {UIMouseEvent} from './event/events/UIMouseEvent';

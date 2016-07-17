@@ -34,7 +34,7 @@ export class Collection extends EventEmitter {
             this.items.forEach.call(this.items, callback);
         }
 
-        public broadcast(domEvent:MouseEvent, eventConstructor:Function, checkBounds:boolean=true, point:Point=new Point(0,0)) {
+        public broadcast(domEvent:UIEvent, eventConstructor:Function, checkBounds:boolean=true, point:Point=new Point(0,0)) {
             this.forEach( function broadcastEvent(e:UIComponent) {
                 var inBounds:boolean = (checkBounds) ? e.inBoundsOf(point) : true;
 
