@@ -14,6 +14,6 @@ To use Kratos, your browser must support:
 
 # Usage
 To start, clone this repo or install it from npm: `npm install kratos`.
-For examples, look at **demo** folder at project or visit **Wiki** on GitHub for docs.
+For examples, look at **demo** folder at project or visit **[Wiki](https://github.com/odin3/kratos/wiki)** on GitHub for docs.
 
 We strongly reccomend to use TypeScript for development with this platform, but you can use plain JavaScript.
