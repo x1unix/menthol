@@ -1,0 +1,33 @@
+{
+  "name": "kratos",
+  "version": "0.3.0",
+  "description": "Canvas-based UI Framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --project ./src/tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/odin3/kratos.git"
+  },
+  "keywords": [
+    "kratos",
+    "canvas",
+    "frontend",
+    "framework",
+    "ui",
+    "browser"
+  ],
+  "author": "Denis Sedchenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/odin3/kratos/issues"
+  },
+  "homepage": "https://github.com/odin3/kratos#readme",
+  "devDependencies": {
+    "tsc": "*",
+    "tsd": "*",
+    "typescript": ">=1.7.0"
+  }
+}
