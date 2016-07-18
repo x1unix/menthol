@@ -24,7 +24,23 @@ export class UIComponent extends EventEmitter {
         private _margin:BoxModelElement = new BoxModelElement();
         private _font:Font = new Font();
 
-        
+        public emit(eventName:string='emit', eventArgs:Object) {
+            this._emit(eventName, eventArgs);
+            if( this.hasParent() ) this.parent.emit(eventName, eventArgs);
+        }
+
+        public broadcast(eventName:string='broadcast', eventArgs:Object, emitOnEvent:boolean=true) {
+            if( emitOnEvent) this._emit(eventName, eventArgs);
+            this.controls.forEach( (element:UIComponent) => {
+                element.broadcast(eventName, eventArgs);
+            });
+        }
+
+        public react(eventName:string, eventArgs:Object) {
+            this.broadcast('mouseover', eventArgs, false);
+            this.emit('mouseover', eventArgs);
+        }
+
         private _drawn : boolean = false;
         
         public get drawn() : boolean {
@@ -105,6 +121,7 @@ export class UIComponent extends EventEmitter {
             var points = this.points();
             return (location.x >= points[0].x) && (location.x <= points[1].x) && (location.y >= points[0].y) && (location.y <= points[2].y);
         }
+
 
        
         /**

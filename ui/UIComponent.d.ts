@@ -20,6 +20,9 @@ export declare class UIComponent extends EventEmitter {
     private _padding;
     private _margin;
     private _font;
+    emit(eventName: string, eventArgs: Object): void;
+    broadcast(eventName: string, eventArgs: Object, emitOnEvent?: boolean): void;
+    react(eventName: string, eventArgs: Object): void;
     private _drawn;
     drawn: boolean;
     padding: BoxModelElement;

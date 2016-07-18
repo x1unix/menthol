@@ -39,6 +39,25 @@ var UIComponent = (function (_super) {
         this._padding.on(propEvent, fnOnUpdate);
         this._margin.on(propEvent, fnOnUpdate);
     }
+    UIComponent.prototype.emit = function (eventName, eventArgs) {
+        if (eventName === void 0) { eventName = 'emit'; }
+        this._emit(eventName, eventArgs);
+        if (this.hasParent())
+            this.parent.emit(eventName, eventArgs);
+    };
+    UIComponent.prototype.broadcast = function (eventName, eventArgs, emitOnEvent) {
+        if (eventName === void 0) { eventName = 'broadcast'; }
+        if (emitOnEvent === void 0) { emitOnEvent = true; }
+        if (emitOnEvent)
+            this._emit(eventName, eventArgs);
+        this.controls.forEach(function (element) {
+            element.broadcast(eventName, eventArgs);
+        });
+    };
+    UIComponent.prototype.react = function (eventName, eventArgs) {
+        this.broadcast('mouseover', eventArgs, false);
+        this.emit('mouseover', eventArgs);
+    };
     Object.defineProperty(UIComponent.prototype, "drawn", {
         get: function () {
             return this._drawn;
