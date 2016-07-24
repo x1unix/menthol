@@ -39,11 +39,11 @@ button.text = "Click on me!";
 button.font.size = 12;
 button.foreColor = '#fff';
 
+let times = 0;
 
 button.on('click', function(event) {
-    button.top = 10;
-    button.backgroundColor = "#ff3232";
-    button.foreColor = "#000";
+    times++;
+    button.text = `Clicked! ${times}`;
 });
 
 button.on('mouseover', function(event) {
