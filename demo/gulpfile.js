@@ -12,11 +12,25 @@ var gulp        = require('gulp'),
     source      = require('vinyl-source-stream'),
     buffer      = require('vinyl-buffer'),
     gutil       = require('gulp-util'),
+    webserver = require('gulp-webserver'),
     tsProject   = typescript.createProject( './tsconfig.json' );
     transform   = require('vinyl-transform');
 
+var server = {
+    host: '0.0.0.0',
+    port: '8081'
+};
 
-
+// Start local webserver
+gulp.task('webserver', function() {
+    gulp.src( '.' )
+        .pipe(webserver({
+            host:             server.host,
+            port:             server.port,
+            livereload:       false,
+            directoryListing: false
+        }));
+});
 
 gulp.task('typescripten', function() {
 return tsProject.src()
