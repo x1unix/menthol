@@ -37,6 +37,7 @@ var Form = (function (_super) {
                 e.redraw();
             });
         });
+        this._map.load();
     }
     Object.defineProperty(Form.prototype, "height", {
         get: function () {

@@ -15,52 +15,47 @@ var CanvasMouseEventBroadcaster = (function (_super) {
         if (autobind === void 0) { autobind = false; }
         _super.call(this, owner, events);
         this.elementFound = false;
-        this.eventReactors = {
-            'click': function (element, event) {
-                var old = this.mapper.currentMouseElement;
-                if (old === null || (old.id === element.id)) {
-                    this.mapper.currentMouseElement = element;
-                    var tEvent = new events_1.UIMouseEvent(element, event);
-                    element.react(event.type, tEvent);
-                }
-                else {
-                    old.broadcast('blur', new events_1.UIMouseEvent(element, event));
-                    this.mapper.currentMouseElement = element;
-                    var tEvent = new events_1.UIMouseEvent(element, event);
-                    element.react(event.type, tEvent);
-                }
-            },
-            'mousemove': function (element, event) {
-                var old = this.mapper.currentMouseElement;
-                if ((old === null) || (old.id === element.id)) {
-                    if (old.id === element.id)
-                        return;
-                    this.mapper.currentMouseElement = element;
-                    var tEvent = new events_1.UIMouseEvent(element, event);
-                    element.emit('mouseover', tEvent);
-                }
-                else {
-                    var tEvent = new events_1.UIMouseEvent(old, event);
-                    old.emit('mouseout', tEvent);
-                    this.mapper.currentMouseElement = element;
-                    var tEvent = new events_1.UIMouseEvent(element, event);
-                    element.emit('mouseover', tEvent);
-                }
-            },
-            'dblclick': function (element, event) {
-                this.click(element, event);
-            },
-            'mousedown': function (element, event) {
-                this.click(element, event);
-            },
-            'mouseup': function (element, event) {
-                this.click(element, event);
-            },
-            'mouseout': function (element, event) {
-                this.mapper.currentMouseElement = null;
-            }
-        };
+        this.eventHandlers = new helpers_1.Dictionary();
+        this._initHandlers();
     }
+    CanvasMouseEventBroadcaster.prototype._initHandlers = function () {
+        this.eventHandlers.defaultKey = 'mousemove';
+        this.eventHandlers
+            .add('click', function (element, event) {
+            var old = this.mapper.currentMouseElement;
+            if (old === null || (old.id === element.id)) {
+                this.mapper.currentMouseElement = element;
+                var tEvent = new events_1.UIMouseEvent(element, event);
+                element.react(event.type, tEvent);
+            }
+            else {
+                old.broadcast('blur', new events_1.UIMouseEvent(element, event));
+                this.mapper.currentMouseElement = element;
+                var tEvent = new events_1.UIMouseEvent(element, event);
+                element.react(event.type, tEvent);
+            }
+        })
+            .add('mousemove', function (element, event) {
+            var old = this.mapper.currentMouseElement;
+            if ((old === null) || (old.id === element.id)) {
+                console.warn('same or null');
+                if (!helpers_1.$null(old) && (old['id'] === element.id))
+                    return;
+                this.mapper.currentMouseElement = element;
+                var tEvent = new events_1.UIMouseEvent(element, event);
+                element.emit('mouseover', tEvent);
+            }
+            else {
+                console.warn('not same or null');
+                var tEvent = new events_1.UIMouseEvent(old, event);
+                old.emit('mouseout', tEvent);
+                this.mapper.currentMouseElement = element;
+                var tEvent = new events_1.UIMouseEvent(element, event);
+                element.emit('mouseover', tEvent);
+            }
+        })
+            .alias('dblclick, mousedown, mouseup, mouseout', 'click');
+    };
     CanvasMouseEventBroadcaster.prototype.targetEvent = function (element, event) {
         var _this = this;
         var p = new Point_1.Point(event.layerX, event.layerY);
@@ -74,20 +69,17 @@ var CanvasMouseEventBroadcaster = (function (_super) {
         }
     };
     CanvasMouseEventBroadcaster.prototype.react = function (element, event) {
-        var eReactor = (helpers_1.$defined(this.eventReactors[event.type])) ? this.eventReactors[event.type] : 'mousemove';
-        eReactor(element, event);
+        this.eventHandlers.get(event.type).call(this, element, event);
     };
     CanvasMouseEventBroadcaster.prototype.bindEvent = function (event) {
         var _this = this;
         var owner = this.owner;
         owner._emit(event.type, new events_1.UIMouseEvent(owner, event));
-        helpers_1.$async(function () {
-            owner.controls.forEach(function (element) {
-                _this.targetEvent(element, event);
-            });
-            if (!_this.elementFound)
-                _this.mapper.currentMouseElement = null;
+        owner.controls.forEach(function (element) {
+            _this.targetEvent(element, event);
         });
+        if (!this.elementFound)
+            this.mapper.currentMouseElement = null;
     };
     return CanvasMouseEventBroadcaster;
 }(CanvasEventBroadcaster_1.CanvasEventBroadcaster));

@@ -21,13 +21,17 @@ export class CanvasEventBroadcaster {
     public constructor(owner:Form, events:string[]=[], autobind:boolean=false) {
         this.owner = owner;
         this.events = events;
-        this.mapper = owner.mapper;
+        // debugger;
+        
 
         if( autobind ) this.load();
     }
+
+
     public load() {
         if( this.loaded ) return;
 
+        this.mapper = this.owner.mapper;
         this.events.forEach( (eventName) => {
             this.owner.canvas.addEventListener(eventName, (event:MouseEvent) => {
                 this.bindEvent(event); 

@@ -2,18 +2,22 @@ import {UIComponent} from '../UIComponent';
 import {Form} from '../Form';
 import {Point} from '../types/Point';
 import {UIMouseEvent} from '../../events';
-import {$async, $defined} from '../../helpers';
+import {$null, $async, $defined, Dictionary} from '../../helpers';
 import {CanvasEventBroadcaster} from '../types/CanvasEventBroadcaster';
 
 export class CanvasMouseEventBroadcaster extends CanvasEventBroadcaster {
     private elementFound:boolean = false;
+    private eventHandlers:Dictionary = new Dictionary();
 
     public constructor(owner:Form, events:string[]=[], autobind:boolean=false) {
         super(owner, events);
+        this._initHandlers();
     }
 
-    protected eventReactors = {
-            'click': function(element:UIComponent, event:MouseEvent) {
+    protected _initHandlers() {
+        this.eventHandlers.defaultKey = 'mousemove';
+        this.eventHandlers
+            .add('click', function(element:UIComponent, event:MouseEvent) {
                 var old:UIComponent = this.mapper.currentMouseElement;
 
                 if( old === null || (old.id === element.id)) { 
@@ -28,16 +32,22 @@ export class CanvasMouseEventBroadcaster extends CanvasEventBroadcaster {
                     element.react(event.type, tEvent);
                 }
                 
-            },
-            'mousemove': function(element:UIComponent, event:MouseEvent) {
+            })
+            .add('mousemove', function(element:UIComponent, event:MouseEvent) {
                 var old:UIComponent = this.mapper.currentMouseElement;
                 if( (old === null) || (old.id === element.id) )  {
-                    if (old.id === element.id) return;
+
+                    console.warn('same or null');
+
+                    if ( !$null(old) && (old['id'] === element.id) ) return;
 
                     this.mapper.currentMouseElement = element;
                     var tEvent:UIMouseEvent = new UIMouseEvent(element, event);
                     element.emit('mouseover', tEvent);
                 } else {
+
+                    console.warn('not same or null');
+
                     // Send to old element
                     var tEvent:UIMouseEvent = new UIMouseEvent(old, event);
                     old.emit('mouseout', tEvent);
@@ -48,21 +58,10 @@ export class CanvasMouseEventBroadcaster extends CanvasEventBroadcaster {
                     var tEvent:UIMouseEvent = new UIMouseEvent(element, event);
                     element.emit('mouseover', tEvent);   
                 }  
-            },
-            'dblclick': function(element:UIComponent, event:MouseEvent) {
-                this.click(element, event);
-            },
-            'mousedown': function(element:UIComponent, event:MouseEvent) {
-                this.click(element, event);
-            },
-            'mouseup': function(element:UIComponent, event:MouseEvent) {
-                this.click(element, event);
-            },
-            'mouseout': function(element:UIComponent, event:MouseEvent) {
-                this.mapper.currentMouseElement = null;
-            }
-            
-        };
+            })
+            .alias('dblclick, mousedown, mouseup, mouseout', 'click');
+    }
+
     protected targetEvent(element:UIComponent, event:MouseEvent) {
         let p:Point = new Point(event.layerX, event.layerY);
         if( element.inBoundsOf(p) ) {
@@ -76,8 +75,7 @@ export class CanvasMouseEventBroadcaster extends CanvasEventBroadcaster {
     }
 
     protected react(element:UIComponent, event:MouseEvent) {
-        var eReactor = ( $defined(this.eventReactors[event.type]) ) ? this.eventReactors[event.type] : 'mousemove';
-        eReactor(element, event);
+       this.eventHandlers.get(event.type).call(this, element, event);
     }
 
     protected bindEvent(event:MouseEvent) {
@@ -87,12 +85,14 @@ export class CanvasMouseEventBroadcaster extends CanvasEventBroadcaster {
         owner._emit( event.type, new UIMouseEvent(owner, event) );
 
         // Broadcast to children   
-        $async( () => {
+        //$async( () => {
             owner.controls.forEach((element: UIComponent) => {
                 this.targetEvent(element, event);
             });
+
+            //debugger;
             if( !this.elementFound ) this.mapper.currentMouseElement = null;
-        });
+        //});
         
     }
 }

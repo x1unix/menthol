@@ -33,7 +33,7 @@ gulp.task('make', ['typescripten'], function() {
     return b.bundle()
         .pipe(source('app.js'))
         .pipe(buffer())
-        .pipe(uglify())
+       // .pipe(uglify())
         .on('error', gutil.log)
         .pipe(gulp.dest('./'));
 });

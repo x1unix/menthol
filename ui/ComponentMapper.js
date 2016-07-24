@@ -5,7 +5,7 @@ var ComponentMapper = (function () {
         this._guidMap = {};
         this.broadcasters = [];
         this.owner = owner;
-        this.broadcasters.push(new CanvasMouseEventBroadcaster_1.CanvasMouseEventBroadcaster(owner, ComponentMapper.DOMMouseEvents, true));
+        this.broadcasters.push(new CanvasMouseEventBroadcaster_1.CanvasMouseEventBroadcaster(owner, ComponentMapper.DOMMouseEvents, false));
     }
     Object.defineProperty(ComponentMapper.prototype, "currentMouseElement", {
         get: function () {
@@ -27,6 +27,11 @@ var ComponentMapper = (function () {
         enumerable: true,
         configurable: true
     });
+    ComponentMapper.prototype.load = function () {
+        this.broadcasters.forEach(function (e) {
+            e.load();
+        });
+    };
     ComponentMapper.prototype._registerId = function (element) {
         this._guidMap[element.id.toString()] = element;
     };

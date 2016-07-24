@@ -46,10 +46,16 @@ button.on('click', function(event) {
     button.foreColor = "#000";
 });
 
-button.on('mousemove', function(event) {
+button.on('mouseover', function(event) {
     button.backgroundColor = "#cecece";
     button.foreColor = "#000";
 });
+
+button.on('mouseout', () => {
+    button.backgroundColor = "#000";
+    button.foreColor = "#fff";
+} );
+
 
 app.controls.add(button);
 
@@ -64,3 +70,4 @@ label.font.size = 18;
 app.controls.add(label);
 
 
+window['app'] = app;

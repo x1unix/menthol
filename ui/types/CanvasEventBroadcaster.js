@@ -6,7 +6,6 @@ var CanvasEventBroadcaster = (function () {
         this._loaded = false;
         this.owner = owner;
         this.events = events;
-        this.mapper = owner.mapper;
         if (autobind)
             this.load();
     }
@@ -24,6 +23,7 @@ var CanvasEventBroadcaster = (function () {
         var _this = this;
         if (this.loaded)
             return;
+        this.mapper = this.owner.mapper;
         this.events.forEach(function (eventName) {
             _this.owner.canvas.addEventListener(eventName, function (event) {
                 _this.bindEvent(event);

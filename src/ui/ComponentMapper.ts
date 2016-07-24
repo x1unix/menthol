@@ -46,8 +46,15 @@ export class ComponentMapper {
 
         public constructor(owner:Form) {
             this.owner = owner;
-            this.broadcasters.push( new CanvasMouseEventBroadcaster(owner, ComponentMapper.DOMMouseEvents, true));
+            this.broadcasters.push( new CanvasMouseEventBroadcaster(owner, ComponentMapper.DOMMouseEvents, false));
             
+            
+        }
+
+        public load() {
+         this.broadcasters.forEach( (e) => {
+             e.load();
+         });
         }
 
         private _registerId(element:UIComponent) {

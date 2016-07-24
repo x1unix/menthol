@@ -91,5 +91,7 @@ export class Form extends EventEmitter {
                     e.redraw();
                 });
             });
+
+            this._map.load();
         }
     }

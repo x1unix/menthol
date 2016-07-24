@@ -12,6 +12,7 @@ export declare class ComponentMapper {
     static DOMMouseEvents: string[];
     static DOMEvents: string[];
     constructor(owner: Form);
+    load(): void;
     private _registerId(element);
     getElementById(eid: string): any;
     register(item: UIComponent): void;
