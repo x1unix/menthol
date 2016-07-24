@@ -37,21 +37,19 @@ var CanvasMouseEventBroadcaster = (function (_super) {
         })
             .add('mousemove', function (element, event) {
             var old = this.mapper.currentMouseElement;
-            if ((old === null) || (old.id === element.id)) {
-                console.warn('same or null');
-                if (!helpers_1.$null(old) && (old['id'] === element.id))
-                    return;
+            if (helpers_1.$null(old)) {
                 this.mapper.currentMouseElement = element;
                 var tEvent = new events_1.UIMouseEvent(element, event);
                 element.emit('mouseover', tEvent);
             }
             else {
-                console.warn('not same or null');
-                var tEvent = new events_1.UIMouseEvent(old, event);
-                old.emit('mouseout', tEvent);
-                this.mapper.currentMouseElement = element;
-                var tEvent = new events_1.UIMouseEvent(element, event);
-                element.emit('mouseover', tEvent);
+                if (old.id !== element.id) {
+                    var tEvent = new events_1.UIMouseEvent(old, event);
+                    old.emit('mouseout', tEvent);
+                    this.mapper.currentMouseElement = element;
+                    var tEvent = new events_1.UIMouseEvent(element, event);
+                    element.emit('mouseover', tEvent);
+                }
             }
         })
             .alias('dblclick, mousedown, mouseup, mouseout', 'click');
@@ -69,17 +67,25 @@ var CanvasMouseEventBroadcaster = (function (_super) {
         }
     };
     CanvasMouseEventBroadcaster.prototype.react = function (element, event) {
+        this.elementFound = true;
         this.eventHandlers.get(event.type).call(this, element, event);
     };
     CanvasMouseEventBroadcaster.prototype.bindEvent = function (event) {
         var _this = this;
         var owner = this.owner;
+        var cElement = this.mapper.currentMouseElement;
+        var pElement = this.mapper.previousMouseElement;
+        this.elementFound = false;
+        this.mapper.previousMouseElement = cElement;
         owner._emit(event.type, new events_1.UIMouseEvent(owner, event));
         owner.controls.forEach(function (element) {
             _this.targetEvent(element, event);
         });
-        if (!this.elementFound)
+        if (!this.elementFound && !helpers_1.$null(this.mapper.previousMouseElement)) {
+            pElement.emit('mouseout', new events_1.UIMouseEvent(pElement, event));
             this.mapper.currentMouseElement = null;
+            this.mapper.previousMouseElement = null;
+        }
     };
     return CanvasMouseEventBroadcaster;
 }(CanvasEventBroadcaster_1.CanvasEventBroadcaster));

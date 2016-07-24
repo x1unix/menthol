@@ -4,6 +4,8 @@ var ComponentMapper = (function () {
     function ComponentMapper(owner) {
         this._guidMap = {};
         this.broadcasters = [];
+        this.previousMouseElement = null;
+        this._currentMouseElement = null;
         this.owner = owner;
         this.broadcasters.push(new CanvasMouseEventBroadcaster_1.CanvasMouseEventBroadcaster(owner, ComponentMapper.DOMMouseEvents, false));
     }

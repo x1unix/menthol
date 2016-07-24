@@ -12,7 +12,7 @@ var Form = (function (_super) {
     __extends(Form, _super);
     function Form(handler, bootstrap) {
         _super.call(this);
-        this.version = new helpers_1.Version(0, 4, 0);
+        this.version = new helpers_1.Version(0, 5, 0);
         var self = this;
         this.element = handler;
         this.canvas = document.createElement('canvas');

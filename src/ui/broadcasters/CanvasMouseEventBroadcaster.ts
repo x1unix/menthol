@@ -35,29 +35,24 @@ export class CanvasMouseEventBroadcaster extends CanvasEventBroadcaster {
             })
             .add('mousemove', function(element:UIComponent, event:MouseEvent) {
                 var old:UIComponent = this.mapper.currentMouseElement;
-                if( (old === null) || (old.id === element.id) )  {
 
-                    console.warn('same or null');
-
-                    if ( !$null(old) && (old['id'] === element.id) ) return;
-
+                if( $null(old) ) {
                     this.mapper.currentMouseElement = element;
                     var tEvent:UIMouseEvent = new UIMouseEvent(element, event);
                     element.emit('mouseover', tEvent);
                 } else {
-
-                    console.warn('not same or null');
-
-                    // Send to old element
-                    var tEvent:UIMouseEvent = new UIMouseEvent(old, event);
-                    old.emit('mouseout', tEvent);
-                    
-                    this.mapper.currentMouseElement = element;
-                    
-                    // New element
-                    var tEvent:UIMouseEvent = new UIMouseEvent(element, event);
-                    element.emit('mouseover', tEvent);   
-                }  
+                    if( old.id !== element.id ) {
+                        // Send to old element
+                        var tEvent:UIMouseEvent = new UIMouseEvent(old, event);
+                        old.emit('mouseout', tEvent);
+                        
+                        this.mapper.currentMouseElement = element;
+                        
+                        // New element
+                        var tEvent:UIMouseEvent = new UIMouseEvent(element, event);
+                        element.emit('mouseover', tEvent);   
+                    }
+                } 
             })
             .alias('dblclick, mousedown, mouseup, mouseout', 'click');
     }
@@ -75,24 +70,32 @@ export class CanvasMouseEventBroadcaster extends CanvasEventBroadcaster {
     }
 
     protected react(element:UIComponent, event:MouseEvent) {
+       this.elementFound = true;
        this.eventHandlers.get(event.type).call(this, element, event);
     }
 
     protected bindEvent(event:MouseEvent) {
         let owner:Form = this.owner;
+        let cElement:UIComponent = this.mapper.currentMouseElement;
+        var pElement:UIComponent = this.mapper.previousMouseElement;
+        this.elementFound = false;
 
+        this.mapper.previousMouseElement = cElement;
+        
         // Emit to form
         owner._emit( event.type, new UIMouseEvent(owner, event) );
 
         // Broadcast to children   
-        //$async( () => {
-            owner.controls.forEach((element: UIComponent) => {
-                this.targetEvent(element, event);
-            });
+        owner.controls.forEach((element: UIComponent) => {
+            this.targetEvent(element, event);
+        });
 
-            //debugger;
-            if( !this.elementFound ) this.mapper.currentMouseElement = null;
-        //});
+        // If element not found, trigger to prev element
+        if( !this.elementFound && !$null(this.mapper.previousMouseElement) ) {
+            pElement.emit('mouseout', new UIMouseEvent(pElement, event));
+            this.mapper.currentMouseElement = null;
+            this.mapper.previousMouseElement = null;
+        }
         
     }
 }

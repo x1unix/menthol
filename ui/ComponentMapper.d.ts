@@ -5,6 +5,7 @@ export declare class ComponentMapper {
     private _guidMap;
     owner: Form;
     broadcasters: CanvasEventBroadcaster[];
+    previousMouseElement: UIComponent;
     private _currentMouseElement;
     currentMouseElement: UIComponent;
     private _currentFocusedElement;

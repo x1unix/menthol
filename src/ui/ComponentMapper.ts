@@ -12,7 +12,9 @@ export class ComponentMapper {
         public owner:Form;
         public broadcasters:CanvasEventBroadcaster[] = [];
         
-        private _currentMouseElement : UIComponent;
+        public previousMouseElement: UIComponent = null;
+
+        private _currentMouseElement : UIComponent = null;
         public get currentMouseElement() : UIComponent {
             return this._currentMouseElement;
         }
