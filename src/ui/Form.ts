@@ -76,11 +76,6 @@ export class Form extends EventEmitter {
             this.element.appendChild(this.canvas);
             this.controls = new Collection(null, this);
 
-            // Check when item inserted and 
-            this.controls.on('elementInserted', function(item) {
-                
-            });
-
             this._emit('drawStart', new UIEvent(this, {}));
 
             this._map = new ComponentMapper(this);

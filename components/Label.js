@@ -38,6 +38,7 @@ var Label = (function (_super) {
     });
     Label.prototype._render = function () {
         this.context.textAlign = this.textAlign;
+        this.context.fillStyle = this.foreColor;
         this.context.font = this.font.toString();
         this.context.fillText(this.text, this.position.y, this.position.x);
     };

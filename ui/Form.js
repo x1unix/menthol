@@ -27,8 +27,6 @@ var Form = (function (_super) {
             bootstrap.call(self, handler);
         this.element.appendChild(this.canvas);
         this.controls = new Collection_1.Collection(null, this);
-        this.controls.on('elementInserted', function (item) {
-        });
         this._emit('drawStart', new events_1.UIEvent(this, {}));
         this._map = new ComponentMapper_1.ComponentMapper(this);
         this.on('redraw', function () {

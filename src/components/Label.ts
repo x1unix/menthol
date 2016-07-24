@@ -36,6 +36,7 @@ export class Label extends UIComponent {
         
         public _render() {
             this.context.textAlign = this.textAlign;
+            this.context.fillStyle = this.foreColor;
             this.context.font = this.font.toString();
             this.context.fillText(this.text, this.position.y, this.position.x);
         }
