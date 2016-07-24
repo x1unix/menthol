@@ -19,7 +19,6 @@ export class CanvasMouseEventBroadcaster extends CanvasEventBroadcaster {
         this.eventHandlers
             .add('click', function(element:UIComponent, event:MouseEvent) {
                 var old:UIComponent = this.mapper.currentMouseElement;
-                console.warn('click commited', element);
                 if( old === null || (old.id === element.id)) { 
                     this.mapper.currentMouseElement = element;
                     var tEvent:UIMouseEvent = new UIMouseEvent(element, event);
