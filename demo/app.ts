@@ -6,6 +6,9 @@ import {Button, Label, Rectangle} from '../components';
 
 let times = 0;
 let loop = false;
+let redrawTimes = 0;
+var fps = 0;
+
 
 // Create main frame
 var app = new Form( document.getElementById('app'), function() {
@@ -18,6 +21,21 @@ var app = new Form( document.getElementById('app'), function() {
 app.on('click', function() {
     console.log('canvas form click!');
 });
+
+// Update frames count on each redraw
+app.on('redraw', () => {
+    redrawTimes++;
+});
+
+// Label
+var label = new Label(app);
+label.left = 320;
+label.top = 128;
+label.text = `Redraw requests: ${redrawTimes}\nFPS: ${fps}`;
+label.foreColor = "#ff00aa";
+label.font.size = 18;
+app.controls.add(label);
+
 
 // Rectangle
 var rect = new Rectangle(app);
@@ -45,27 +63,27 @@ button.foreColor = '#fff';
 
 
 function doCount() {
-    times++;
-    button.text = `Counting... ${times}`;
     if( !stopped ) {
-        stopped = false;
+        times++;
+        button.text = `Counting... ${times}`;
+
+        button.backgroundColor = t ? '#f00':'#00f';
+        t = !t;
+        
         window.requestAnimationFrame(doCount);
+    } else {
+        times = 0;
+        button.text = "Click on start count!";
     }
 }
 
-function breakCount() {
-    stopped = true;
-    times = 0;
-    button.text = "Click on start count!";
-}
-
-var btnClicked = false;
-var stopped = false;
+var t = false;
+var stopped = true;
 
 
 button.on('click', () => {
-    btnClicked ? breakCount() : doCount();
-    btnClicked = !btnClicked;
+    stopped = !stopped;
+    if (!stopped) doCount();
 });
 
 button.on('mouseover', function(event) {
@@ -82,14 +100,21 @@ button.on('mouseout', () => {
 app.controls.add(button);
 
 
-// Label
-var label = new Label(app);
-label.left = 320;
-label.top = 128;
-label.text = "Hello world!";
-label.foreColor = "#ff00aa";
-label.font.size = 18;
-app.controls.add(label);
+// FPS Benchmark
+// Update fps on label
+setInterval(() => {
+    label.text = `Redraw requests: ${redrawTimes}\nFPS: ${fps}`;
+    fps = 0;
+    redrawTimes = 0;
+},1000);
+
+// Count fps
+function fpsCount() {
+    fps++;
+    window.requestAnimationFrame(fpsCount);
+}
+
+window.requestAnimationFrame(fpsCount);
 
 
 window['app'] = app;
