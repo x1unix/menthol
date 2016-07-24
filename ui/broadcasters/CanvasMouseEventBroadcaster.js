@@ -23,16 +23,17 @@ var CanvasMouseEventBroadcaster = (function (_super) {
         this.eventHandlers
             .add('click', function (element, event) {
             var old = this.mapper.currentMouseElement;
+            console.warn('click commited', element);
             if (old === null || (old.id === element.id)) {
                 this.mapper.currentMouseElement = element;
                 var tEvent = new events_1.UIMouseEvent(element, event);
-                element.react(event.type, tEvent);
+                element.emit(event.type, tEvent);
             }
             else {
                 old.broadcast('blur', new events_1.UIMouseEvent(element, event));
                 this.mapper.currentMouseElement = element;
                 var tEvent = new events_1.UIMouseEvent(element, event);
-                element.react(event.type, tEvent);
+                element.emit(event.type, tEvent);
             }
         })
             .add('mousemove', function (element, event) {
