@@ -11,7 +11,7 @@ export class Form extends EventEmitter {
         public controls:Collection;
         public canvas:HTMLCanvasElement;
         private _map: ComponentMapper;
-        public version:Version = new Version(0,5,0);
+        public version:Version = new Version(0,5,1);
 
         public get height() : number {
             return this.canvas.height;

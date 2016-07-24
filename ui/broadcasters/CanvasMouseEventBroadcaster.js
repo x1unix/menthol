@@ -82,7 +82,8 @@ var CanvasMouseEventBroadcaster = (function (_super) {
             _this.targetEvent(element, event);
         });
         if (!this.elementFound && !helpers_1.$null(this.mapper.previousMouseElement)) {
-            pElement.emit('mouseout', new events_1.UIMouseEvent(pElement, event));
+            if (!helpers_1.$null(pElement))
+                pElement.emit('mouseout', new events_1.UIMouseEvent(pElement, event));
             this.mapper.currentMouseElement = null;
             this.mapper.previousMouseElement = null;
         }

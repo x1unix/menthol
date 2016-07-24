@@ -92,7 +92,7 @@ export class CanvasMouseEventBroadcaster extends CanvasEventBroadcaster {
 
         // If element not found, trigger to prev element
         if( !this.elementFound && !$null(this.mapper.previousMouseElement) ) {
-            pElement.emit('mouseout', new UIMouseEvent(pElement, event));
+            if( !$null(pElement) ) pElement.emit('mouseout', new UIMouseEvent(pElement, event));
             this.mapper.currentMouseElement = null;
             this.mapper.previousMouseElement = null;
         }
