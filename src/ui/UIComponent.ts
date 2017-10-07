@@ -1,7 +1,7 @@
 import {EventEmitter, PropertyChangedEvent, UIEvent, UIMouseEvent} from '../events';
 import {isset} from '../helpers';
 import {BoxModelElement} from './types/BoxModelElement';
-import {Form} from './Form';
+import {Form} from './Storyboard';
 import {Collection} from './types/Collection';
 import {GUID} from './types/GUID';
 import {Point} from './types/Point';

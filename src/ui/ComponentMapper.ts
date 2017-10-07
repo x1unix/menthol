@@ -1,6 +1,6 @@
 import {UIComponent} from './UIComponent';
 import {Point} from './types/Point';
-import {Form} from './Form';
+import {Storyboard} from './Storyboard';
 import {isset} from '../helpers';
 import {CanvasEventBroadcaster} from './types/CanvasEventBroadcaster';
 import {CanvasMouseEventBroadcaster} from './broadcasters/CanvasMouseEventBroadcaster';
@@ -8,68 +8,70 @@ import {CanvasMouseEventBroadcaster} from './broadcasters/CanvasMouseEventBroadc
 import {UIMouseEvent, UICommonEvent} from '../events';
 
 export class ComponentMapper {
-        private _guidMap = {};
-        public owner:Form;
-        public broadcasters:CanvasEventBroadcaster[] = [];
-        
-        public previousMouseElement: UIComponent = null;
+  private _guidMap = {};
+  public owner: Storyboard;
+  public broadcasters: CanvasEventBroadcaster[] = [];
 
-        private _currentMouseElement : UIComponent = null;
-        public get currentMouseElement() : UIComponent {
-            return this._currentMouseElement;
-        }
-        public set currentMouseElement(e:UIComponent) {
-            this._currentMouseElement = e;
-        }
+  public previousMouseElement: UIComponent = null;
 
-        private _currentFocusedElement : UIComponent;
-        public get currentFocusedElement() : UIComponent {
-            return this._currentFocusedElement;
-        }
+  private _currentMouseElement: UIComponent = null;
+  public get currentMouseElement(): UIComponent {
+    return this._currentMouseElement;
+  }
 
-        public set currentFocusedElement(e:UIComponent) {
-            this._currentFocusedElement = e;
-        }
-        
-        public static DOMMouseEvents:string[] = [
-            'click',
-            'dblclick',
-            'mousedown',
-            'mouseup',
-            'mouseover',
-            'mouseout',
-            'mousemove'];
+  public set currentMouseElement(e: UIComponent) {
+    this._currentMouseElement = e;
+  }
 
-        public static DOMEvents:string[] = [
-            'keydown',
-            'keyup',
-            'keypress'
-        ];
+  private _currentFocusedElement: UIComponent;
 
-        public constructor(owner:Form) {
-            this.owner = owner;
-            this.broadcasters.push( new CanvasMouseEventBroadcaster(owner, ComponentMapper.DOMMouseEvents, false));
-            
-            
-        }
+  public get currentFocusedElement(): UIComponent {
+    return this._currentFocusedElement;
+  }
 
-        public load() {
-         this.broadcasters.forEach( (e) => {
-             e.load();
-         });
-        }
+  public set currentFocusedElement(e: UIComponent) {
+    this._currentFocusedElement = e;
+  }
 
-        private _registerId(element:UIComponent) {
-            this._guidMap[element.id.toString()] = element;
-        }
+  public static DOMMouseEvents: string[] = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseup',
+    'mouseover',
+    'mouseout',
+    'mousemove'];
 
-        public getElementById(eid:string) {
-            return this._guidMap[eid];
-        }
+  public static DOMEvents: string[] = [
+    'keydown',
+    'keyup',
+    'keypress'
+  ];
 
-        public register(item:UIComponent) {
-            this._registerId(item);
-        }
+  public constructor(owner: Storyboard) {
+    this.owner = owner;
+    this.broadcasters.push(new CanvasMouseEventBroadcaster(owner, ComponentMapper.DOMMouseEvents, false));
 
-        
-    }
+
+  }
+
+  public load() {
+    this.broadcasters.forEach((e) => {
+      e.load();
+    });
+  }
+
+  private _registerId(element: UIComponent) {
+    this._guidMap[element.id.toString()] = element;
+  }
+
+  public getElementById(eid: string) {
+    return this._guidMap[eid];
+  }
+
+  public register(item: UIComponent) {
+    this._registerId(item);
+  }
+
+
+}

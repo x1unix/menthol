@@ -1,12 +1,14 @@
 export class FontStyle {
-        private _styleType:string;
-        public constructor(type:string) {
-            this._styleType = type;
-        }
-        public toString() {
-            return this._styleType.toString();
-        }
+  private _styleType: string;
 
-        public static normal:FontStyle = new FontStyle('normal');
-        public static italic:FontStyle = new FontStyle('italic');
-    }
+  public constructor(type: string) {
+    this._styleType = type;
+  }
+
+  public toString() {
+    return this._styleType.toString();
+  }
+
+  public static normal: FontStyle = new FontStyle('normal');
+  public static italic: FontStyle = new FontStyle('italic');
+}

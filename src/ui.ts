@@ -12,4 +12,4 @@ export {Collection} from './ui/types/Collection';
 // Classes
 export {ComponentMapper} from './ui/ComponentMapper';
 export {UIComponent} from './ui/UIComponent';
-export {Form} from './ui/Form';
+export {Storyboard} from './ui/Storyboard';
