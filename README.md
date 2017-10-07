@@ -1,4 +1,4 @@
-[[https://github.com/odin3/menthol/blob/master/demo/logo.png|alt=logo]]
+![logo](https://github.com/odin3/menthol/blob/master/docs/logo.png)
 # Menthol
 >Canvas-based UI Framework for Web Applications
 
