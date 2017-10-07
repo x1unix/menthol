@@ -8,6 +8,7 @@ import {Collection} from './types/Collection';
 import { MTRenderError, MentholException } from '../foundation';
 
 import { isNil } from 'lodash';
+import {ViewportInformation} from './ViewportInformation';
 
 /**
  * A class to create, configure, display and control
@@ -23,6 +24,12 @@ export class Storyboard extends EventEmitter {
    * Canvas that used to display UI
    */
   protected renderTarget: HTMLCanvasElement = null;
+
+  /**
+   * Information about user display
+   * @type {any}
+   */
+  protected display: ViewportInformation = null;
 
   /**
    * Map with UI bindings
@@ -80,6 +87,7 @@ export class Storyboard extends EventEmitter {
       throw new MTRenderError('Canvas already defined');
     }
 
+    this.display = new ViewportInformation(canvas);
     this.renderTarget = canvas;
   }
 
@@ -180,8 +188,14 @@ export class Storyboard extends EventEmitter {
    */
   public syncCanvasBounds(): Storyboard {
     const { x, y } = this.size;
-    this.canvas.height = y;
-    this.canvas.width = x;
+    const ratio = this.display.pixelRatio;
+
+    this.canvas.height = y * ratio;
+    this.canvas.width = x * ratio;
+
+    // Fix for HiDPI and Retina displays
+    this.canvas.getContext('2d').setTransform(ratio, 0, 0, ratio, 0, 0);
+
     this.redrawContext(true);
     return this;
   }
