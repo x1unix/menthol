@@ -1,5 +1,6 @@
+[[https://github.com/odin3/menthol/blob/master/demo/logo.png|alt=logo]]
 # Menthol
-Canvas-based UI Framework for Web Applications
+>Canvas-based UI Framework for Web Applications
 
 # About
 This framework allows to develop web-applications and use *canvas* as user interface instead of DOM and HTML.
