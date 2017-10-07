@@ -1,7 +1,7 @@
 // In this example we use local libraries from starter kit.
 // If you're using npm, import from 'kratos/ui'
 
-import { Form } from '../../src/ui';
+import { Storyboard } from '../../src/ui';
 import {Button, Label, Rectangle} from '../../src/components';
 
 let times = 0;
@@ -11,7 +11,7 @@ let fps = 0;
 
 
 // Create main frame
-let app = new Form( document.getElementById('app'), function() {
+let app = new Storyboard( document.getElementById('app'), function() {
     this.height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     this.width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     console.log('call bootstrap', this);
@@ -69,7 +69,7 @@ function doCount() {
 
         button.backgroundColor = t ? '#f00' : '#00f';
         t = !t;
-        
+
         window.requestAnimationFrame(doCount);
     } else {
         times = 0;
