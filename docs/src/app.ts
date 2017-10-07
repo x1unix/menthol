@@ -1,20 +1,20 @@
 // In this example we use local libraries from starter kit.
 // If you're using npm, import from 'kratos/ui'
 
-import {Form} from '../ui';
-import {Button, Label, Rectangle} from '../components';
+import { Form } from '../../src/ui';
+import {Button, Label, Rectangle} from '../../src/components';
 
 let times = 0;
 let loop = false;
 let redrawTimes = 0;
-var fps = 0;
+let fps = 0;
 
 
 // Create main frame
-var app = new Form( document.getElementById('app'), function() {
+let app = new Form( document.getElementById('app'), function() {
     this.height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     this.width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    console.log('call bootstrap',this);
+    console.log('call bootstrap', this);
 } );
 
 // Add global event listener
@@ -28,18 +28,18 @@ app.on('redraw', () => {
 });
 
 // Label
-var label = new Label(app);
+let label = new Label(app);
 label.left = 320;
 label.top = 128;
 label.text = `Redraw requests: ${redrawTimes}\nFPS: ${fps}`;
-label.foreColor = "#ff00aa";
+label.foreColor = '#ff00aa';
 label.font.size = 18;
 app.controls.add(label);
 
 
 // Rectangle
-var rect = new Rectangle(app);
-rect.height = 32
+let rect = new Rectangle(app);
+rect.height = 32;
 rect.width = 32;
 rect.left = 0;
 rect.top = 0;
@@ -53,32 +53,32 @@ app.controls.add(rect);
 
 
 // Button
-var button = new Button(app);
+let button = new Button(app);
 button.left = 128;
 button.top = 128;
-button.text = "Click on start count!";
+button.text = 'Click on start count!';
 button.font.size = 12;
 button.foreColor = '#fff';
 
 
 
 function doCount() {
-    if( !stopped ) {
+    if (!stopped ) {
         times++;
         button.text = `Counting... ${times}`;
 
-        button.backgroundColor = t ? '#f00':'#00f';
+        button.backgroundColor = t ? '#f00' : '#00f';
         t = !t;
         
         window.requestAnimationFrame(doCount);
     } else {
         times = 0;
-        button.text = "Click on start count!";
+        button.text = 'Click on start count!';
     }
 }
 
-var t = false;
-var stopped = true;
+let t = false;
+let stopped = true;
 
 
 button.on('click', () => {
@@ -87,13 +87,13 @@ button.on('click', () => {
 });
 
 button.on('mouseover', function(event) {
-    button.backgroundColor = "#cecece";
-    button.foreColor = "#000";
+    button.backgroundColor = '#cecece';
+    button.foreColor = '#000';
 });
 
 button.on('mouseout', () => {
-    button.backgroundColor = "#000";
-    button.foreColor = "#fff";
+    button.backgroundColor = '#000';
+    button.foreColor = '#fff';
 } );
 
 
@@ -106,7 +106,7 @@ setInterval(() => {
     label.text = `Redraw requests: ${redrawTimes}\nFPS: ${fps}`;
     fps = 0;
     redrawTimes = 0;
-},1000);
+}, 1000);
 
 // Count fps
 function fpsCount() {

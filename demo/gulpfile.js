@@ -40,12 +40,12 @@ return tsProject.src()
 
 gulp.task('make', ['typescripten'], function() {
     var b = browserify({
-        entries: './app.js',
+        entries: './app.dist',
         debug: true
     });
 
     return b.bundle()
-        .pipe(source('app.js'))
+        .pipe(source('app.dist'))
         .pipe(buffer())
        // .pipe(uglify())
         .on('error', gutil.log)
@@ -55,12 +55,12 @@ gulp.task('make', ['typescripten'], function() {
 
 gulp.task('debug', ['typescripten'], function() {
     var b = browserify({
-        entries: 'app.js',
+        entries: 'app.dist',
         debug: true
     });
 
     return b.bundle()
-        .pipe(source('app.js'))
+        .pipe(source('app.dist'))
         .pipe(buffer())
         .on('error', gutil.log)
         .pipe(gulp.dest('./'));

@@ -2,6 +2,8 @@
     "compileOnSave": true,
     "compilerOptions": {
         "module": "commonjs",
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
         "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
@@ -10,6 +12,6 @@
         "target": "es5"
     },
     "files": [
-        "app.ts"
+      "src/app.ts"
     ]
 }

@@ -1,1 +1,0 @@
-{"version":3,"file":"CollectionEvent.js","sourceRoot":"","sources":["../../src/event/events/CollectionEvent.ts"],"names":[],"mappings":";;;;;;AAAA,sBAAoB,UAAU,CAAC,CAAA;AAI/B;IAAqC,mCAAK;IAClC,yBAAmB,MAAmB,EAAE,IAAgB;QACpD,kBAAM,MAAM,EAAE;YACV,IAAI,EAAE,IAAI;SACb,CAAC,CAAC;IACP,CAAC;IACL,sBAAC;AAAD,CAAC,AANL,CAAqC,aAAK,GAMrC;AANQ,uBAAe,kBAMvB,CAAA"}
