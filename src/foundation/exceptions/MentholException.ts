@@ -9,7 +9,7 @@ export class MentholException extends Error {
    * Get object class name
    * @returns {string}
    */
-  get className(): string {
+  public get className(): string {
     if (isNil(this.constructor['name'])) {
       return Object.prototype.toString.call(this)
         .match(/^\[object\s(.*)\]$/)[1];
@@ -20,7 +20,7 @@ export class MentholException extends Error {
 
   constructor(public message: string) {
     super(message);
-    this.name = this.className.toString();
+    this.name = this.className || 'MentholException';
     this.stack = (<any> new Error()).stack;
   }
 }
