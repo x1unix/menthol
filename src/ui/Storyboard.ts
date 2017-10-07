@@ -1,6 +1,4 @@
 import {UIEvent, EventEmitter, UIMouseEvent} from '../events';
-import {Version} from '../helpers';
-import {isset} from '../helpers';
 import {Point} from './types/Point';
 import {UIComponent} from './UIComponent';
 import {ComponentMapper} from './ComponentMapper';
@@ -9,6 +7,8 @@ import { MTRenderError, MentholException } from '../foundation';
 
 import { isNil } from 'lodash';
 import {ViewportInformation} from './ViewportInformation';
+import { Logger } from '../helpers/logs/Logger';
+
 
 /**
  * A class to create, configure, display and control
@@ -69,6 +69,11 @@ export class Storyboard extends EventEmitter {
   get mapper() {
     return this._map;
   }
+
+  get log(): Logger {
+    return Logger.main;
+  }
+
 
   public get canvas(): HTMLCanvasElement {
     return this.renderTarget;
@@ -135,6 +140,8 @@ export class Storyboard extends EventEmitter {
     });
 
     this._map.load();
+
+    this.log.info(this.className, 'Storyboard created');
   }
 
   /**
@@ -187,8 +194,12 @@ export class Storyboard extends EventEmitter {
    * @returns {Storyboard}
    */
   public syncCanvasBounds(): Storyboard {
+    this.log.debug(this.className, `Syncing canvas bounds...`);
+
     const { x, y } = this.size;
     const ratio = this.display.pixelRatio;
+
+    this.log.debug(this.className, `Screen: ${x}x${y} (ratio: ${ratio})`);
 
     this.canvas.height = y * ratio;
     this.canvas.width = x * ratio;
