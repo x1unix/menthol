@@ -72,17 +72,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Emittable_1 = __webpack_require__(25);
 exports.Emittable = Emittable_1.Emittable;
-var Event_1 = __webpack_require__(3);
+var Event_1 = __webpack_require__(4);
 exports.Event = Event_1.Event;
-var EventEmitter_1 = __webpack_require__(9);
+var EventEmitter_1 = __webpack_require__(10);
 exports.EventEmitter = EventEmitter_1.EventEmitter;
-var EventGenerator_1 = __webpack_require__(10);
+var EventGenerator_1 = __webpack_require__(11);
 exports.EventGenerator = EventGenerator_1.EventGenerator;
-var EventListenersCollection_1 = __webpack_require__(11);
+var EventListenersCollection_1 = __webpack_require__(12);
 exports.EventListenersCollection = EventListenersCollection_1.EventListenersCollection;
 var CollectionEvent_1 = __webpack_require__(26);
 exports.CollectionEvent = CollectionEvent_1.CollectionEvent;
-var PropertyChangedEvent_1 = __webpack_require__(8);
+var PropertyChangedEvent_1 = __webpack_require__(9);
 exports.PropertyChangedEvent = PropertyChangedEvent_1.PropertyChangedEvent;
 var UIEvent_1 = __webpack_require__(2);
 exports.UIEvent = UIEvent_1.UIEvent;
@@ -126,7 +126,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Event_1 = __webpack_require__(3);
+var Event_1 = __webpack_require__(4);
 var UIEvent = (function (_super) {
     __extends(UIEvent, _super);
     function UIEvent(target, args) {
@@ -139,6 +139,51 @@ exports.UIEvent = UIEvent;
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var lodash_1 = __webpack_require__(7);
+var MentholException = (function (_super) {
+    __extends(MentholException, _super);
+    function MentholException(message) {
+        var _this = _super.call(this, message) || this;
+        _this.message = message;
+        _this.name = _this.className || 'MentholException';
+        _this.stack = new Error().stack;
+        return _this;
+    }
+    Object.defineProperty(MentholException.prototype, "className", {
+        get: function () {
+            if (lodash_1.isNil(this.constructor['name'])) {
+                return Object.prototype.toString.call(this)
+                    .match(/^\[object\s(.*)\]$/)[1];
+            }
+            else {
+                return this.constructor['name'];
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return MentholException;
+}(Error));
+exports.MentholException = MentholException;
+
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -175,7 +220,7 @@ exports.Event = Event;
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -183,22 +228,22 @@ exports.Event = Event;
 Object.defineProperty(exports, "__esModule", { value: true });
 var Version_1 = __webpack_require__(30);
 exports.Version = Version_1.Version;
-var Domain_1 = __webpack_require__(13);
+var Domain_1 = __webpack_require__(14);
 exports.Domain = Domain_1.Domain;
 var Dictionary_1 = __webpack_require__(31);
 exports.Dictionary = Dictionary_1.Dictionary;
 var isset_1 = __webpack_require__(32);
 exports.isset = isset_1.isset;
-var _defined_1 = __webpack_require__(15);
+var _defined_1 = __webpack_require__(16);
 exports.$defined = _defined_1.$defined;
 var _async_1 = __webpack_require__(33);
 exports.$async = _async_1.$async;
-var _null_1 = __webpack_require__(14);
+var _null_1 = __webpack_require__(15);
 exports.$null = _null_1.$null;
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -262,480 +307,7 @@ exports.Collection = Collection;
 
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = __webpack_require__(16);
-var MentholException = (function (_super) {
-    __extends(MentholException, _super);
-    function MentholException(message) {
-        var _this = _super.call(this, message) || this;
-        _this.message = message;
-        _this.name = _this.className.toString();
-        _this.stack = new Error().stack;
-        return _this;
-    }
-    Object.defineProperty(MentholException.prototype, "className", {
-        get: function () {
-            if (lodash_1.isNil(this.constructor['name'])) {
-                return Object.prototype.toString.call(this)
-                    .match(/^\[object\s(.*)\]$/)[1];
-            }
-            else {
-                return this.constructor['name'];
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return MentholException;
-}(Error));
-exports.MentholException = MentholException;
-
-
-/***/ }),
 /* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var events_1 = __webpack_require__(0);
-var Point_1 = __webpack_require__(1);
-var ComponentMapper_1 = __webpack_require__(12);
-var Collection_1 = __webpack_require__(5);
-var foundation_1 = __webpack_require__(35);
-var lodash_1 = __webpack_require__(16);
-var Storyboard = (function (_super) {
-    __extends(Storyboard, _super);
-    function Storyboard() {
-        var _this = _super.call(this) || this;
-        _this.renderTarget = null;
-        _this.controls = new Collection_1.Collection(null, _this);
-        return _this;
-    }
-    Object.defineProperty(Storyboard.prototype, "size", {
-        get: function () {
-            var styles = window.getComputedStyle(this.renderTarget);
-            return new Point_1.Point(parseInt(styles.width), parseInt(styles.height));
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Storyboard.prototype, "height", {
-        get: function () {
-            return this.canvas.height;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Storyboard.prototype, "width", {
-        get: function () {
-            return this.canvas.width;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Storyboard.prototype, "context", {
-        get: function () {
-            return this.canvas.getContext('2d');
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Storyboard.prototype, "mapper", {
-        get: function () {
-            return this._map;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Storyboard.prototype, "canvas", {
-        get: function () {
-            return this.renderTarget;
-        },
-        set: function (canvas) {
-            if (!(canvas instanceof HTMLCanvasElement)) {
-                throw new foundation_1.MTRenderError('Passed argument is not HTMLCanvasElement');
-            }
-            if (!lodash_1.isNil(this.canvas)) {
-                throw new foundation_1.MTRenderError('Canvas already defined');
-            }
-            this.renderTarget = canvas;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Storyboard.prototype.redrawContext = function (force) {
-        this._emit('redraw', new events_1.UIEvent(this, { 'force': force }));
-    };
-    Storyboard.prototype.registerElement = function (element) {
-        this.mapper.register(element);
-    };
-    Storyboard.prototype.getElementById = function (id) {
-        return this._map.getElementById(id);
-    };
-    Storyboard.prototype.clear = function () {
-        this.context.clearRect(0, 0, this.width, this.height);
-        return this;
-    };
-    Storyboard.prototype.onCreate = function () {
-        if (lodash_1.isNil(this.canvas)) {
-            throw new foundation_1.MTRenderError('Cannot create storyboard - canvas is not defined');
-        }
-        this._emit('drawStart', new events_1.UIEvent(this, {}));
-        this._map = new ComponentMapper_1.ComponentMapper(this);
-        this.on('redraw', function () {
-            this.onDraw();
-        });
-        this._map.load();
-    };
-    Storyboard.prototype.onStart = function () {
-    };
-    Storyboard.prototype.onDraw = function () {
-        this.clear();
-        this.controls.forEach(function (e) {
-            e.redraw();
-        });
-    };
-    Storyboard.prototype.onResume = function () {
-    };
-    Storyboard.prototype.onPause = function () {
-    };
-    Storyboard.prototype.onStop = function () {
-    };
-    Storyboard.prototype.onDestroy = function () {
-    };
-    Storyboard.prototype.syncCanvasBounds = function () {
-        var _a = this.size, x = _a.x, y = _a.y;
-        this.canvas.height = y;
-        this.canvas.width = x;
-        this.redrawContext(true);
-        return this;
-    };
-    return Storyboard;
-}(events_1.EventEmitter));
-exports.Storyboard = Storyboard;
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var UIEvent_1 = __webpack_require__(2);
-var PropertyChangedEvent = (function (_super) {
-    __extends(PropertyChangedEvent, _super);
-    function PropertyChangedEvent(target, propName, oldValue, newValue) {
-        return _super.call(this, target, {
-            propertyName: propName,
-            oldValue: oldValue,
-            newValue: newValue
-        }) || this;
-    }
-    return PropertyChangedEvent;
-}(UIEvent_1.UIEvent));
-exports.PropertyChangedEvent = PropertyChangedEvent;
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var EventGenerator_1 = __webpack_require__(10);
-var EventEmitter = (function () {
-    function EventEmitter() {
-        this.__e = new EventGenerator_1.EventGenerator(this);
-    }
-    EventEmitter.prototype.on = function (eventName, listener) { };
-    EventEmitter.prototype.off = function (eventName, listener) { };
-    EventEmitter.prototype._emit = function (eventName, eventArgs) { };
-    ;
-    return EventEmitter;
-}());
-exports.EventEmitter = EventEmitter;
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var EventListenersCollection_1 = __webpack_require__(11);
-var EventGenerator = (function () {
-    function EventGenerator(eventGenerator, inject) {
-        if (inject === void 0) { inject = true; }
-        this._listeners = {};
-        this._owner = eventGenerator;
-        if (inject)
-            this.inject();
-    }
-    EventGenerator.prototype.hasListeners = function (eventName) {
-        return typeof this._listeners[eventName] !== 'undefined';
-    };
-    EventGenerator.prototype.inject = function () {
-        var self = this;
-        this._owner.on = function () {
-            self.on.apply(self, arguments);
-        };
-        this._owner.off = function () {
-            self.off.apply(self, arguments);
-        };
-        this._owner._emit = function () {
-            self.emit.apply(self, arguments);
-        };
-    };
-    EventGenerator.prototype.emit = function (eventName, eventArgs) {
-        if (this.hasListeners(eventName)) {
-            this._listeners[eventName].triggerEvent(eventArgs);
-        }
-    };
-    EventGenerator.prototype.addEventListener = function (eventName, listener) {
-        if (!this.hasListeners(eventName)) {
-            this._listeners[eventName] = new EventListenersCollection_1.EventListenersCollection(this._owner, eventName);
-        }
-        this._listeners[eventName].addEventListener(listener);
-        return this._owner;
-    };
-    EventGenerator.prototype.removeEventListener = function (eventName, listener) {
-        if (!this.hasListeners(eventName))
-            return false;
-        return this._listeners[eventName].removeEventListener(listener);
-    };
-    EventGenerator.prototype.on = function (eventNames, listener) {
-        var self = this;
-        eventNames.trim().split(' ').forEach(function (eName) {
-            self.addEventListener(eName, listener);
-        });
-    };
-    EventGenerator.prototype.off = function (eventNames, listener) {
-        var self = this;
-        eventNames.trim().split(' ').forEach(function (eName) {
-            self.removeEventListener(eName, listener);
-        });
-    };
-    return EventGenerator;
-}());
-exports.EventGenerator = EventGenerator;
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var EventListenersCollection = (function () {
-    function EventListenersCollection(source, name) {
-        this._hooks = [];
-        this.eventName = name;
-        this._eventSource = source;
-    }
-    EventListenersCollection.prototype.triggerEvent = function (eventArgs) {
-        var self = this;
-        this._hooks.forEach(function (hook) {
-            if (typeof hook == 'function')
-                hook.call(self._eventSource, eventArgs);
-        });
-    };
-    EventListenersCollection.prototype.getListenersCount = function () {
-        return this._hooks.length;
-    };
-    EventListenersCollection.prototype.addEventListener = function (eventListener) {
-        this._hooks.push(eventListener);
-    };
-    EventListenersCollection.prototype.removeEventListener = function (eventListener) {
-        var hookId = this._hooks.indexOf(eventListener);
-        if (hookId > -1)
-            this._hooks.splice(hookId, 1);
-        return (hookId > -1);
-    };
-    return EventListenersCollection;
-}());
-exports.EventListenersCollection = EventListenersCollection;
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var CanvasMouseEventBroadcaster_1 = __webpack_require__(29);
-var ComponentMapper = (function () {
-    function ComponentMapper(owner) {
-        this._guidMap = {};
-        this.broadcasters = [];
-        this.previousMouseElement = null;
-        this._currentMouseElement = null;
-        this.owner = owner;
-        this.broadcasters.push(new CanvasMouseEventBroadcaster_1.CanvasMouseEventBroadcaster(owner, ComponentMapper.DOMMouseEvents, false));
-    }
-    Object.defineProperty(ComponentMapper.prototype, "currentMouseElement", {
-        get: function () {
-            return this._currentMouseElement;
-        },
-        set: function (e) {
-            this._currentMouseElement = e;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ComponentMapper.prototype, "currentFocusedElement", {
-        get: function () {
-            return this._currentFocusedElement;
-        },
-        set: function (e) {
-            this._currentFocusedElement = e;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ComponentMapper.prototype.load = function () {
-        this.broadcasters.forEach(function (e) {
-            e.load();
-        });
-    };
-    ComponentMapper.prototype._registerId = function (element) {
-        this._guidMap[element.id.toString()] = element;
-    };
-    ComponentMapper.prototype.getElementById = function (eid) {
-        return this._guidMap[eid];
-    };
-    ComponentMapper.prototype.register = function (item) {
-        this._registerId(item);
-    };
-    ComponentMapper.DOMMouseEvents = [
-        'click',
-        'dblclick',
-        'mousedown',
-        'mouseup',
-        'mouseover',
-        'mouseout',
-        'mousemove'
-    ];
-    ComponentMapper.DOMEvents = [
-        'keydown',
-        'keyup',
-        'keypress'
-    ];
-    return ComponentMapper;
-}());
-exports.ComponentMapper = ComponentMapper;
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var events_1 = __webpack_require__(0);
-var Domain = (function (_super) {
-    __extends(Domain, _super);
-    function Domain() {
-        return _super.call(this) || this;
-    }
-    Domain.prototype._execute = function (method) {
-        try {
-            method();
-        }
-        catch (ex) {
-            this._emit('error', ex);
-        }
-    };
-    Domain.prototype.run = function (func) {
-        var _this = this;
-        setTimeout(function () {
-            _this._execute(func);
-        }, 0);
-    };
-    return Domain;
-}(events_1.EventEmitter));
-exports.Domain = Domain;
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-function $null(val) {
-    return val === null;
-}
-exports.$null = $null;
-
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-function $defined(e) {
-    return typeof e !== 'undefined';
-}
-exports.$defined = $defined;
-
-
-/***/ }),
-/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -17827,6 +17399,439 @@ exports.$defined = $defined;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(36), __webpack_require__(37)(module)))
 
 /***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var events_1 = __webpack_require__(0);
+var Point_1 = __webpack_require__(1);
+var ComponentMapper_1 = __webpack_require__(13);
+var Collection_1 = __webpack_require__(6);
+var foundation_1 = __webpack_require__(35);
+var lodash_1 = __webpack_require__(7);
+var ViewportInformation_1 = __webpack_require__(40);
+var Storyboard = (function (_super) {
+    __extends(Storyboard, _super);
+    function Storyboard() {
+        var _this = _super.call(this) || this;
+        _this.renderTarget = null;
+        _this.display = null;
+        _this.controls = new Collection_1.Collection(null, _this);
+        return _this;
+    }
+    Object.defineProperty(Storyboard.prototype, "size", {
+        get: function () {
+            var styles = window.getComputedStyle(this.renderTarget);
+            return new Point_1.Point(parseInt(styles.width), parseInt(styles.height));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Storyboard.prototype, "height", {
+        get: function () {
+            return this.canvas.height;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Storyboard.prototype, "width", {
+        get: function () {
+            return this.canvas.width;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Storyboard.prototype, "context", {
+        get: function () {
+            return this.canvas.getContext('2d');
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Storyboard.prototype, "mapper", {
+        get: function () {
+            return this._map;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Storyboard.prototype, "canvas", {
+        get: function () {
+            return this.renderTarget;
+        },
+        set: function (canvas) {
+            if (!(canvas instanceof HTMLCanvasElement)) {
+                throw new foundation_1.MTRenderError('Passed argument is not HTMLCanvasElement');
+            }
+            if (!lodash_1.isNil(this.canvas)) {
+                throw new foundation_1.MTRenderError('Canvas already defined');
+            }
+            this.display = new ViewportInformation_1.ViewportInformation(canvas);
+            this.renderTarget = canvas;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Storyboard.prototype.redrawContext = function (force) {
+        this._emit('redraw', new events_1.UIEvent(this, { 'force': force }));
+    };
+    Storyboard.prototype.registerElement = function (element) {
+        this.mapper.register(element);
+    };
+    Storyboard.prototype.getElementById = function (id) {
+        return this._map.getElementById(id);
+    };
+    Storyboard.prototype.clear = function () {
+        this.context.clearRect(0, 0, this.width, this.height);
+        return this;
+    };
+    Storyboard.prototype.onCreate = function () {
+        if (lodash_1.isNil(this.canvas)) {
+            throw new foundation_1.MTRenderError('Cannot create storyboard - canvas is not defined');
+        }
+        this._emit('drawStart', new events_1.UIEvent(this, {}));
+        this._map = new ComponentMapper_1.ComponentMapper(this);
+        this.on('redraw', function () {
+            this.onDraw();
+        });
+        this._map.load();
+    };
+    Storyboard.prototype.onStart = function () {
+    };
+    Storyboard.prototype.onDraw = function () {
+        this.clear();
+        this.controls.forEach(function (e) {
+            e.redraw();
+        });
+    };
+    Storyboard.prototype.onResume = function () {
+    };
+    Storyboard.prototype.onPause = function () {
+    };
+    Storyboard.prototype.onStop = function () {
+    };
+    Storyboard.prototype.onDestroy = function () {
+    };
+    Storyboard.prototype.syncCanvasBounds = function () {
+        var _a = this.size, x = _a.x, y = _a.y;
+        var ratio = this.display.pixelRatio;
+        this.canvas.height = y * ratio;
+        this.canvas.width = x * ratio;
+        this.canvas.getContext('2d').setTransform(ratio, 0, 0, ratio, 0, 0);
+        this.redrawContext(true);
+        return this;
+    };
+    return Storyboard;
+}(events_1.EventEmitter));
+exports.Storyboard = Storyboard;
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var UIEvent_1 = __webpack_require__(2);
+var PropertyChangedEvent = (function (_super) {
+    __extends(PropertyChangedEvent, _super);
+    function PropertyChangedEvent(target, propName, oldValue, newValue) {
+        return _super.call(this, target, {
+            propertyName: propName,
+            oldValue: oldValue,
+            newValue: newValue
+        }) || this;
+    }
+    return PropertyChangedEvent;
+}(UIEvent_1.UIEvent));
+exports.PropertyChangedEvent = PropertyChangedEvent;
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var EventGenerator_1 = __webpack_require__(11);
+var EventEmitter = (function () {
+    function EventEmitter() {
+        this.__e = new EventGenerator_1.EventGenerator(this);
+    }
+    EventEmitter.prototype.on = function (eventName, listener) { };
+    EventEmitter.prototype.off = function (eventName, listener) { };
+    EventEmitter.prototype._emit = function (eventName, eventArgs) { };
+    ;
+    return EventEmitter;
+}());
+exports.EventEmitter = EventEmitter;
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var EventListenersCollection_1 = __webpack_require__(12);
+var EventGenerator = (function () {
+    function EventGenerator(eventGenerator, inject) {
+        if (inject === void 0) { inject = true; }
+        this._listeners = {};
+        this._owner = eventGenerator;
+        if (inject)
+            this.inject();
+    }
+    EventGenerator.prototype.hasListeners = function (eventName) {
+        return typeof this._listeners[eventName] !== 'undefined';
+    };
+    EventGenerator.prototype.inject = function () {
+        var self = this;
+        this._owner.on = function () {
+            self.on.apply(self, arguments);
+        };
+        this._owner.off = function () {
+            self.off.apply(self, arguments);
+        };
+        this._owner._emit = function () {
+            self.emit.apply(self, arguments);
+        };
+    };
+    EventGenerator.prototype.emit = function (eventName, eventArgs) {
+        if (this.hasListeners(eventName)) {
+            this._listeners[eventName].triggerEvent(eventArgs);
+        }
+    };
+    EventGenerator.prototype.addEventListener = function (eventName, listener) {
+        if (!this.hasListeners(eventName)) {
+            this._listeners[eventName] = new EventListenersCollection_1.EventListenersCollection(this._owner, eventName);
+        }
+        this._listeners[eventName].addEventListener(listener);
+        return this._owner;
+    };
+    EventGenerator.prototype.removeEventListener = function (eventName, listener) {
+        if (!this.hasListeners(eventName))
+            return false;
+        return this._listeners[eventName].removeEventListener(listener);
+    };
+    EventGenerator.prototype.on = function (eventNames, listener) {
+        var self = this;
+        eventNames.trim().split(' ').forEach(function (eName) {
+            self.addEventListener(eName, listener);
+        });
+    };
+    EventGenerator.prototype.off = function (eventNames, listener) {
+        var self = this;
+        eventNames.trim().split(' ').forEach(function (eName) {
+            self.removeEventListener(eName, listener);
+        });
+    };
+    return EventGenerator;
+}());
+exports.EventGenerator = EventGenerator;
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var EventListenersCollection = (function () {
+    function EventListenersCollection(source, name) {
+        this._hooks = [];
+        this.eventName = name;
+        this._eventSource = source;
+    }
+    EventListenersCollection.prototype.triggerEvent = function (eventArgs) {
+        var self = this;
+        this._hooks.forEach(function (hook) {
+            if (typeof hook == 'function')
+                hook.call(self._eventSource, eventArgs);
+        });
+    };
+    EventListenersCollection.prototype.getListenersCount = function () {
+        return this._hooks.length;
+    };
+    EventListenersCollection.prototype.addEventListener = function (eventListener) {
+        this._hooks.push(eventListener);
+    };
+    EventListenersCollection.prototype.removeEventListener = function (eventListener) {
+        var hookId = this._hooks.indexOf(eventListener);
+        if (hookId > -1)
+            this._hooks.splice(hookId, 1);
+        return (hookId > -1);
+    };
+    return EventListenersCollection;
+}());
+exports.EventListenersCollection = EventListenersCollection;
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var CanvasMouseEventBroadcaster_1 = __webpack_require__(29);
+var ComponentMapper = (function () {
+    function ComponentMapper(owner) {
+        this._guidMap = {};
+        this.broadcasters = [];
+        this.previousMouseElement = null;
+        this._currentMouseElement = null;
+        this.owner = owner;
+        this.broadcasters.push(new CanvasMouseEventBroadcaster_1.CanvasMouseEventBroadcaster(owner, ComponentMapper.DOMMouseEvents, false));
+    }
+    Object.defineProperty(ComponentMapper.prototype, "currentMouseElement", {
+        get: function () {
+            return this._currentMouseElement;
+        },
+        set: function (e) {
+            this._currentMouseElement = e;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ComponentMapper.prototype, "currentFocusedElement", {
+        get: function () {
+            return this._currentFocusedElement;
+        },
+        set: function (e) {
+            this._currentFocusedElement = e;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ComponentMapper.prototype.load = function () {
+        this.broadcasters.forEach(function (e) {
+            e.load();
+        });
+    };
+    ComponentMapper.prototype._registerId = function (element) {
+        this._guidMap[element.id.toString()] = element;
+    };
+    ComponentMapper.prototype.getElementById = function (eid) {
+        return this._guidMap[eid];
+    };
+    ComponentMapper.prototype.register = function (item) {
+        this._registerId(item);
+    };
+    ComponentMapper.DOMMouseEvents = [
+        'click',
+        'dblclick',
+        'mousedown',
+        'mouseup',
+        'mouseover',
+        'mouseout',
+        'mousemove'
+    ];
+    ComponentMapper.DOMEvents = [
+        'keydown',
+        'keyup',
+        'keypress'
+    ];
+    return ComponentMapper;
+}());
+exports.ComponentMapper = ComponentMapper;
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var events_1 = __webpack_require__(0);
+var Domain = (function (_super) {
+    __extends(Domain, _super);
+    function Domain() {
+        return _super.call(this) || this;
+    }
+    Domain.prototype._execute = function (method) {
+        try {
+            method();
+        }
+        catch (ex) {
+            this._emit('error', ex);
+        }
+    };
+    Domain.prototype.run = function (func) {
+        var _this = this;
+        setTimeout(function () {
+            _this._execute(func);
+        }, 0);
+    };
+    return Domain;
+}(events_1.EventEmitter));
+exports.Domain = Domain;
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function $null(val) {
+    return val === null;
+}
+exports.$null = $null;
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function $defined(e) {
+    return typeof e !== 'undefined';
+}
+exports.$defined = $defined;
+
+
+/***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17900,19 +17905,19 @@ var BoxModelElement_1 = __webpack_require__(19);
 exports.BoxModelElement = BoxModelElement_1.BoxModelElement;
 var GUID_1 = __webpack_require__(20);
 exports.GUID = GUID_1.GUID;
-var TextAlign_1 = __webpack_require__(40);
+var TextAlign_1 = __webpack_require__(41);
 exports.TextAlign = TextAlign_1.TextAlign;
 var Font_1 = __webpack_require__(21);
 exports.Font = Font_1.Font;
 var FontStyle_1 = __webpack_require__(22);
 exports.FontStyle = FontStyle_1.FontStyle;
-var Collection_1 = __webpack_require__(5);
+var Collection_1 = __webpack_require__(6);
 exports.Collection = Collection_1.Collection;
-var ComponentMapper_1 = __webpack_require__(12);
+var ComponentMapper_1 = __webpack_require__(13);
 exports.ComponentMapper = ComponentMapper_1.ComponentMapper;
-var UIComponent_1 = __webpack_require__(41);
+var UIComponent_1 = __webpack_require__(42);
 exports.UIComponent = UIComponent_1.UIComponent;
-var Storyboard_1 = __webpack_require__(7);
+var Storyboard_1 = __webpack_require__(8);
 exports.Storyboard = Storyboard_1.Storyboard;
 
 
@@ -18046,7 +18051,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var helpers_1 = __webpack_require__(4);
+var helpers_1 = __webpack_require__(5);
 var FontStyle_1 = __webpack_require__(22);
 var events_1 = __webpack_require__(0);
 var Font = (function (_super) {
@@ -18160,7 +18165,7 @@ exports.FontStyle = FontStyle;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var application_storyboard_1 = __webpack_require__(24);
-var Menthol_1 = __webpack_require__(44);
+var Menthol_1 = __webpack_require__(45);
 var canvas = document.querySelector('canvas#storyboard');
 Menthol_1.Menthol.bootstrapView(canvas, application_storyboard_1.ApplicationStoryboard);
 
@@ -18182,10 +18187,10 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Storyboard_1 = __webpack_require__(7);
+var Storyboard_1 = __webpack_require__(8);
 var Label_1 = __webpack_require__(17);
-var Rectangle_1 = __webpack_require__(42);
-var Button_1 = __webpack_require__(43);
+var Rectangle_1 = __webpack_require__(43);
+var Button_1 = __webpack_require__(44);
 var ApplicationStoryboard = (function (_super) {
     __extends(ApplicationStoryboard, _super);
     function ApplicationStoryboard() {
@@ -18296,8 +18301,8 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var PropertyChangedEvent_1 = __webpack_require__(8);
-var EventEmitter_1 = __webpack_require__(9);
+var PropertyChangedEvent_1 = __webpack_require__(9);
+var EventEmitter_1 = __webpack_require__(10);
 var Emittable = (function (_super) {
     __extends(Emittable, _super);
     function Emittable() {
@@ -18332,7 +18337,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Event_1 = __webpack_require__(3);
+var Event_1 = __webpack_require__(4);
 var CollectionEvent = (function (_super) {
     __extends(CollectionEvent, _super);
     function CollectionEvent(target, item) {
@@ -18433,7 +18438,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Point_1 = __webpack_require__(1);
 var events_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
+var helpers_1 = __webpack_require__(5);
 var CanvasEventBroadcaster_1 = __webpack_require__(34);
 var CanvasMouseEventBroadcaster = (function (_super) {
     __extends(CanvasMouseEventBroadcaster, _super);
@@ -18553,8 +18558,8 @@ exports.Version = Version;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var _null_1 = __webpack_require__(14);
-var _defined_1 = __webpack_require__(15);
+var _null_1 = __webpack_require__(15);
+var _defined_1 = __webpack_require__(16);
 var Dictionary = (function () {
     function Dictionary() {
         this._items = {};
@@ -18645,7 +18650,7 @@ exports.isset = isset;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Domain_1 = __webpack_require__(13);
+var Domain_1 = __webpack_require__(14);
 function $async(method, onError) {
     if (onError === void 0) { onError = console.error; }
     var localDomain = new Domain_1.Domain();
@@ -18712,7 +18717,7 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(6));
+__export(__webpack_require__(3));
 __export(__webpack_require__(38));
 __export(__webpack_require__(39));
 
@@ -18789,7 +18794,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var MentholException_1 = __webpack_require__(6);
+var MentholException_1 = __webpack_require__(3);
 var MTRenderError = (function (_super) {
     __extends(MTRenderError, _super);
     function MTRenderError(message) {
@@ -18817,7 +18822,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var MentholException_1 = __webpack_require__(6);
+var MentholException_1 = __webpack_require__(3);
 var MTInvalidOperationException = (function (_super) {
     __extends(MTInvalidOperationException, _super);
     function MTInvalidOperationException() {
@@ -18830,6 +18835,38 @@ exports.MTInvalidOperationException = MTInvalidOperationException;
 
 /***/ }),
 /* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var lodash_1 = __webpack_require__(7);
+var MentholException_1 = __webpack_require__(3);
+var ViewportInformation = (function () {
+    function ViewportInformation(canvas) {
+        this.canvas = canvas;
+        if (lodash_1.isNil(canvas))
+            throw new MentholException_1.MentholException('Cannot generate ViewportInformation: Canvas is not provided');
+    }
+    Object.defineProperty(ViewportInformation.prototype, "pixelRatio", {
+        get: function () {
+            var ctx = this.canvas.getContext('2d'), dpr = window.devicePixelRatio || 1, bsr = ctx['webkitBackingStorePixelRatio'] ||
+                ctx['mozBackingStorePixelRatio'] ||
+                ctx['msBackingStorePixelRatio'] ||
+                ctx['oBackingStorePixelRatio'] ||
+                ctx['backingStorePixelRatio'] || 1;
+            return dpr / bsr;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return ViewportInformation;
+}());
+exports.ViewportInformation = ViewportInformation;
+
+
+/***/ }),
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18849,7 +18886,7 @@ exports.TextAlign = TextAlign;
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18866,9 +18903,9 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var events_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
+var helpers_1 = __webpack_require__(5);
 var BoxModelElement_1 = __webpack_require__(19);
-var Collection_1 = __webpack_require__(5);
+var Collection_1 = __webpack_require__(6);
 var GUID_1 = __webpack_require__(20);
 var Point_1 = __webpack_require__(1);
 var Font_1 = __webpack_require__(21);
@@ -19132,7 +19169,7 @@ exports.UIComponent = UIComponent;
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19164,7 +19201,7 @@ exports.Rectangle = Rectangle;
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19235,7 +19272,7 @@ exports.Button = Button;
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
