@@ -5,17 +5,15 @@ import {Point} from './types/Point';
 import {UIComponent} from './UIComponent';
 import {ComponentMapper} from './ComponentMapper';
 import {Collection} from './types/Collection';
+import { MTRenderError, MentholException } from '../foundation';
+
+import { isNil } from 'lodash';
 
 /**
  * A class to create, configure, display and control
  * user interface
  */
 export class Storyboard extends EventEmitter {
-  /**
-   * Root HTML element that holds canvas
-   */
-  private element: HTMLElement;
-
   /**
    * List of children components
    */
@@ -24,7 +22,7 @@ export class Storyboard extends EventEmitter {
   /**
    * Canvas that used to display UI
    */
-  public canvas: HTMLCanvasElement;
+  private renderTarget: HTMLCanvasElement = null;
 
   /**
    * Map with UI bindings
@@ -56,15 +54,32 @@ export class Storyboard extends EventEmitter {
   }
 
 
-  public onCreate() {}
-
-
   get context() {
     return this.canvas.getContext('2d');
   }
 
   get mapper() {
     return this._map;
+  }
+
+  public get canvas(): HTMLCanvasElement {
+    return this.renderTarget;
+  }
+
+  /**
+   * Bind canvas element to the storyboard
+   * @param {HTMLCanvasElement} canvas
+   */
+  public set canvas(canvas: HTMLCanvasElement) {
+    if (!(canvas instanceof HTMLCanvasElement)) {
+      throw new MTRenderError('Passed argument is not HTMLCanvasElement');
+    }
+
+    if (!isNil(this.canvas)) {
+      throw new MTRenderError('Canvas already defined');
+    }
+
+    this.renderTarget = canvas;
   }
 
   /**
@@ -88,44 +103,73 @@ export class Storyboard extends EventEmitter {
     return this;
   }
 
-  /**
-   * Create a new Storyboard on HTML element
-   * @param {HTMLElement} handler HTML element handler
-   * @param {Function} bootstrap On create callback
-   */
-  public constructor(handler: HTMLElement, bootstrap: Function) {
+  public constructor() {
     super();
 
-    let self = this;
-
-    this.element = handler;
-    this.canvas = document.createElement('canvas');
-    this.canvas.tabIndex = 0;
-    this.canvas.focus();
-
-
-    Object.defineProperty(this.canvas, 'form', {
-      value: self,
-      enumerable: true,
-      configurable: true
-    });
-
-    if (bootstrap) bootstrap.call(self, handler);
-
-    this.element.appendChild(this.canvas);
     this.controls = new Collection(null, this);
+  }
+
+  /**
+   * Storyboard create lifecycle hook
+   */
+  public onCreate() {
+    if (isNil(this.canvas)) {
+      throw new MTRenderError('Cannot create storyboard - canvas is not defined');
+    }
 
     this._emit('drawStart', new UIEvent(this, {}));
 
     this._map = new ComponentMapper(this);
 
     this.on('redraw', function () {
-      this.clear();
-      this.controls.forEach(function (e: UIComponent) {
-        e.redraw();
-      });
+      this.onDraw();
     });
 
     this._map.load();
+  }
+
+  /**
+   * Storyboard start lifecycle hook
+   */
+  public onStart() {
+
+  }
+
+  /**
+   * On layout draw hook
+   */
+  public onDraw() {
+    this.clear();
+    this.controls.forEach(function (e: UIComponent) {
+      e.redraw();
+    });
+  }
+
+  /**
+   * Storyboard on resume lifecycle hook
+   */
+  public onResume() {
+
+  }
+
+  /**
+   * Storyboard on pause lifecycle hook
+   */
+  public onPause() {
+
+  }
+
+  /**
+   * Storyboard on stop lifecycle hook
+   */
+  public onStop() {
+
+  }
+
+  /**
+   * Storyboard destroy lifecycle hook
+   */
+  public onDestroy() {
+
   }
 }

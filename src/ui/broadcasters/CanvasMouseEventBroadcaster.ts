@@ -34,21 +34,22 @@ export class CanvasMouseEventBroadcaster extends CanvasEventBroadcaster {
       })
       .add('mousemove', function (element: UIComponent, event: MouseEvent) {
         let old: UIComponent = this.mapper.currentMouseElement;
+        let tEvent: UIMouseEvent = null;
 
         if ($null(old)) {
           this.mapper.currentMouseElement = element;
-          let tEvent: UIMouseEvent = new UIMouseEvent(element, event);
+          tEvent = new UIMouseEvent(element, event);
           element.emit('mouseover', tEvent);
         } else {
           if (old.id !== element.id) {
             // Send to old element
-            let tEvent: UIMouseEvent = new UIMouseEvent(old, event);
+            tEvent = new UIMouseEvent(old, event);
             old.emit('mouseout', tEvent);
 
             this.mapper.currentMouseElement = element;
 
             // New element
-            let tEvent: UIMouseEvent = new UIMouseEvent(element, event);
+            tEvent = new UIMouseEvent(element, event);
             element.emit('mouseover', tEvent);
           }
         }
