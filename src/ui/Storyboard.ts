@@ -22,12 +22,22 @@ export class Storyboard extends EventEmitter {
   /**
    * Canvas that used to display UI
    */
-  private renderTarget: HTMLCanvasElement = null;
+  protected renderTarget: HTMLCanvasElement = null;
 
   /**
    * Map with UI bindings
    */
   private _map: ComponentMapper;
+
+  /**
+   * Get size of view
+   * @returns {Point}
+   */
+  public get size(): Point {
+    const styles = window.getComputedStyle(this.renderTarget);
+
+    return new Point(parseInt(styles.width), parseInt(styles.height));
+  }
 
   /**
    * Storyboard height
@@ -39,20 +49,11 @@ export class Storyboard extends EventEmitter {
 
   /**
    * Storyboard width
-   * @param {number} v
    */
-  public set height(v: number) {
-    this.canvas.height = v;
-  }
 
   public get width(): number {
     return this.canvas.width;
   }
-
-  public set width(v: number) {
-    this.canvas.width = v;
-  }
-
 
   get context() {
     return this.canvas.getContext('2d');
@@ -171,5 +172,17 @@ export class Storyboard extends EventEmitter {
    */
   public onDestroy() {
 
+  }
+
+  /**
+   * Sync absolute height and width of canvas with view resolution
+   * @returns {Storyboard}
+   */
+  public syncCanvasBounds(): Storyboard {
+    const { x, y } = this.size;
+    this.canvas.height = y;
+    this.canvas.width = x;
+    this.redrawContext(true);
+    return this;
   }
 }
