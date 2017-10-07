@@ -22,7 +22,15 @@ export class Menthol {
     board.canvas = canvas;
     canvas.tabIndex = 0;
     canvas.focus();
-    board.onCreate();
+
+    board.syncCanvasBounds()
+      .onCreate();
+
+    window.addEventListener('resize', () => {
+      // Define canvas size (for fullscreen support)
+      // and redraw
+      board.syncCanvasBounds();
+    });
 
     return board;
   }
