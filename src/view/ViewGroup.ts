@@ -55,12 +55,15 @@ export class ViewGroup extends View {
    * Configures ViewGroup's layout and children's layout
    * @param {boolean} changed
    * @param {MTSquare} drawArea
+   * @param {boolean} drawChildren Draw children after configure
    */
-  public onLayout(changed: boolean, drawArea: MTSquare) {
+  public onLayout(changed: boolean, drawArea: MTSquare, drawChildren: boolean = false) {
     super.onLayout(changed, drawArea);
 
+    if (!drawChildren) return;
+
     this.views.forEach((view, index) =>
-      this.drawViewChild(view, index, drawArea)
+      this.drawChildView(view, index, drawArea)
     );
   }
 
@@ -70,7 +73,7 @@ export class ViewGroup extends View {
    * @param {number} index Index
    * @param {MTSquare} drawArea ViewGroup's draw area
    */
-  protected drawViewChild(view: View, index: number, drawArea: MTSquare) {
+  protected drawChildView(view: View, index: number, drawArea: MTSquare) {
     throw new MTNotImplementedException('ViewGroup.drawViewChild must be inherited to draw children content');
   }
 

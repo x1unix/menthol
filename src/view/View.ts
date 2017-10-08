@@ -1,5 +1,5 @@
 ///<reference path="../foundation/MTPoint.ts"/>
-import {Storyboard} from '../ui/Storyboard';
+import {Storyboard} from './Storyboard';
 import {Point} from '../ui/types/Point';
 import {ViewGroup} from './ViewGroup';
 import {LayoutParams} from './LayoutParams';
@@ -12,6 +12,7 @@ import {MTColor} from '../foundation/MTColor';
 
 import {isNil} from 'lodash';
 import {MTBox} from '../foundation/MTBox';
+import {Gravity} from './Gravity';
 
 /**
  * This class represents the basic building block for user interface components.
@@ -151,6 +152,19 @@ export abstract class View {
   protected backgroundColor: MTColor = new MTColor();
 
   /**
+   * View position on parent container
+   * @type {number}
+   */
+  protected layoutGravity: number = Gravity.TOP;
+
+  /**
+   * Position of view's content inside the view
+   * @type {number}
+   */
+  protected gravity: number = Gravity.TOP;
+
+
+  /**
    * View constructor
    * @param {Storyboard} context Context
    * @param {ViewGroup} parentGroup Parent view group
@@ -165,8 +179,29 @@ export abstract class View {
     this.mount = new MTEventEmitter(this);
 
     // Initialize z-index
-    this.zIndex = parentGroup.getZIndex() + 1;
+    if (!isNil(this.parentGroup)) {
+      this.zIndex = this.parentGroup.getZIndex() + 1;
+    } else {
+      this.zIndex = 0;
+    }
+
+
+    this.layoutParams.height = LayoutParams.WRAP_CONTENT;
+    this.layoutParams.height = LayoutParams.WRAP_CONTENT;
   }
+
+  /**
+   * Define parent view group (layout) for the view
+   * @param {ViewGroup} parent
+   * @returns {View}
+   */
+  setParentGroup(parent: ViewGroup): View {
+    this.parentGroup = parent;
+    this.zIndex = parent.getZIndex() + 1;
+    return this;
+  }
+
+  onViewPreConfigure() {}
 
   /**
    * Get view's background color
@@ -241,6 +276,7 @@ export abstract class View {
   setHeight(val: number): View {
     this.height = val;
     this.layoutParams.height = val;
+    this.updateLayout();
     return this;
   }
 
@@ -259,6 +295,7 @@ export abstract class View {
   setWidth(val: number): View {
     this.width = val;
     this.layoutParams.height = val;
+    this.updateLayout();
     return this;
   }
 
@@ -276,6 +313,10 @@ export abstract class View {
     }
 
     return this;
+  }
+
+  getContext(): Storyboard {
+    return this.context;
   }
 
   /**
@@ -403,6 +444,40 @@ export abstract class View {
   }
 
   /**
+   * Set view's gravity on parent container
+   * @param {number} gravity
+   * @returns {View}
+   */
+  setLayoutGravity(gravity: number): View {
+    this.layoutGravity = gravity;
+    this.updateLayout();
+    return this;
+  }
+
+  getLayoutGravity(): number {
+    return this.layoutGravity;
+  }
+
+  /**
+   * Set view's content gravity
+   * @param {number} gravity
+   * @returns {View}
+   */
+  setGravity(gravity: number): View {
+    this.gravity = gravity;
+    this.updateLayout();
+    return this;
+  }
+
+  /**
+   * Gets view's content gravity
+   * @returns {number}
+   */
+  getGravity(): number {
+    return this.gravity;
+  }
+
+  /**
    * Callback for layout setup event.
    * Used to configure view's bounds and layout
    *
@@ -455,7 +530,7 @@ export abstract class View {
 
     const area = this.getDrawableArea();
     const canvas = this.context.getRenderingContext();
-    this.OnDraw(area, canvas);
+    this.onDraw(area, canvas);
   }
 
   /**
@@ -464,12 +539,41 @@ export abstract class View {
    * @param {CanvasRenderingContext2D} canvas Canvas rendering context
    * @constructor
    */
-  protected OnDraw(area: MTSquare, canvas: CanvasRenderingContext2D) {
-    canvas.fillStyle = this.backgroundColor.toString();
-    canvas.fillRect(area.x, area.y, area.width, area.height);
+  protected onDraw(area: MTSquare, canvas: CanvasRenderingContext2D) {
+    if (this.backgroundColor.alpha > 0) {
+      canvas.fillStyle = this.backgroundColor.toString();
+      canvas.fillRect(area.x, area.y, area.width, area.height);
+    }
   }
 
-  private updateLayout() {
+
+  protected getContentDrawPosition(area: MTSquare, contentSize: MTPoint): MTPoint {
+    const wrapX = this.layoutParams.width === LayoutParams.WRAP_CONTENT,
+          wrapY = this.layoutParams.height === LayoutParams.WRAP_CONTENT;
+
+    let x = area.x;
+    let y = area.y;
+
+    if (wrapX && wrapY) {
+      return new MTPoint (x, y);
+    }
+
+    if (contentSize.x >= area.width) {
+      x = area.x;
+    } else {
+      x = area.x + (area.width - contentSize.x) / 2;
+    }
+
+    if (contentSize.y >= area.height) {
+      y = area.y;
+    } else {
+      y = area.y = (area.height - contentSize.y) / 2;
+    }
+
+    return new MTPoint(x, y);
+  }
+
+  protected updateLayout() {
 
   }
 

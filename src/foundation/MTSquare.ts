@@ -3,6 +3,9 @@
  */
 import {MTPoint} from './MTPoint';
 
+/**
+ *
+ */
 export class MTSquare {
 
   /**
@@ -46,5 +49,13 @@ export class MTSquare {
     const { x, y } = point;
 
     return this.isInBounds(x, y);
+  }
+
+  setX(x: number): MTSquare {
+    return new MTSquare(x, this.y, this.height, this.width);
+  }
+
+  setY(y: number): MTSquare {
+    return new MTSquare(this.x, y, this.height, this.width);
   }
 }

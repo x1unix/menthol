@@ -1,4 +1,4 @@
-import {Storyboard} from './ui/Storyboard';
+import {Storyboard} from './view/Storyboard';
 
 /**
  * Application bootstrapper
