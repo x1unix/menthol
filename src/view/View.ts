@@ -454,19 +454,19 @@ export abstract class View {
     this.y = maxViewBounds.y;
 
     const area = this.getDrawableArea();
-
-    this.OnPaint(area);
+    const canvas = this.context.getRenderingContext();
+    this.OnDraw(area, canvas);
   }
 
   /**
-   * Callback for paint event. Used to render the view
-   * @param {MTSquare} area
+   * Callback for paint event. Implement this to do your drawing.
+   * @param {MTSquare} area Parent's view bounds
+   * @param {CanvasRenderingContext2D} canvas Canvas rendering context
    * @constructor
    */
-  protected OnPaint(area: MTSquare) {
-    const canvasContext = this.context.getRenderingContext();
-    canvasContext.fillStyle = this.backgroundColor.toString();
-    canvasContext.fillRect(area.x, area.y, area.width, area.height);
+  protected OnDraw(area: MTSquare, canvas: CanvasRenderingContext2D) {
+    canvas.fillStyle = this.backgroundColor.toString();
+    canvas.fillRect(area.x, area.y, area.width, area.height);
   }
 
   private updateLayout() {
