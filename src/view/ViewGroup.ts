@@ -1,5 +1,8 @@
 import {View} from './View';
 import {MTLayoutError} from '../foundation/index';
+import {isNil} from 'lodash';
+import {MTSquare} from '../foundation/MTSquare';
+import {MTNotImplementedException} from '../foundation/exceptions/MTNotImplementedException';
 
 /**
  * Group of views. Used as layout controller
@@ -15,6 +18,8 @@ export class ViewGroup extends View {
   addView(view: View): ViewGroup {
     if (this.hasView(view))
       throw new MTLayoutError('Cannot add view, view already exists');
+
+    view.setZIndex(this.zIndex + 1, false);
 
     this.views.push(view);
     return this;
@@ -43,6 +48,30 @@ export class ViewGroup extends View {
     this.views.splice(index, 1);
 
     return this;
+  }
+
+  /**
+   * Callback for layout configure event
+   * Configures ViewGroup's layout and children's layout
+   * @param {boolean} changed
+   * @param {MTSquare} drawArea
+   */
+  public onLayout(changed: boolean, drawArea: MTSquare) {
+    super.onLayout(changed, drawArea);
+
+    this.views.forEach((view, index) =>
+      this.drawViewChild(view, index, drawArea)
+    );
+  }
+
+  /**
+   * Draw children content
+   * @param {View} view Child
+   * @param {number} index Index
+   * @param {MTSquare} drawArea ViewGroup's draw area
+   */
+  protected drawViewChild(view: View, index: number, drawArea: MTSquare) {
+    throw new MTNotImplementedException('ViewGroup.drawViewChild must be inherited to draw children content');
   }
 
 

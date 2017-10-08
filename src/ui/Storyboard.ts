@@ -8,6 +8,7 @@ import { MTRenderError, MentholException } from '../foundation';
 import { isNil } from 'lodash';
 import {ViewportInformation} from './ViewportInformation';
 import { Logger } from '../helpers/logs/Logger';
+import {MTSquare} from '../foundation/MTSquare';
 
 
 /**
@@ -209,5 +210,22 @@ export class Storyboard extends EventEmitter {
 
     this.redrawContext(true);
     return this;
+  }
+
+  /**
+   * Get storyboard's bounds
+   * @returns {MTSquare}
+   */
+  public getViewBounds(): MTSquare {
+    const size = this.size;
+    return new MTSquare(0, 0, size.y, size.x);
+  }
+
+  /**
+   * Returns rendering context
+   * @returns {CanvasRenderingContext2D}
+   */
+  public getRenderingContext(): CanvasRenderingContext2D {
+    return this.canvas.getContext('2d');
   }
 }

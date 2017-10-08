@@ -6,4 +6,6 @@ export * from './exceptions/MTInvalidOperationException';
 export * from './MTObject';
 export * from './MTSquare';
 export * from './MTPoint';
+export * from './MTColor';
+export * from './MTBox';
 

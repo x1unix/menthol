@@ -8,6 +8,10 @@ import {MTEventEmitter} from '../foundation/MTEventEmitter';
 import {MTSquare} from '../foundation/MTSquare';
 import {MTPoint} from '../foundation/MTPoint';
 import {MTClickEvent} from './events/MTClickEvent';
+import {MTColor} from '../foundation/MTColor';
+
+import {isNil} from 'lodash';
+import {MTBox} from '../foundation/MTBox';
 
 /**
  * This class represents the basic building block for user interface components.
@@ -129,6 +133,24 @@ export abstract class View {
   protected setSelected: MTEventEmitter<any> = null;
 
   /**
+   * View's padding
+   * @type {[number , number , number , number]}
+   */
+  protected padding: number[] = [0, 0, 0, 0];
+
+  /**
+   * View's margin
+   * @type {[number , number , number , number]}
+   */
+  protected margin: number[] = [0, 0, 0, 0];
+
+  /**
+   * Set view's background color
+   * @type {MTColor}
+   */
+  protected backgroundColor: MTColor = new MTColor();
+
+  /**
    * View constructor
    * @param {Storyboard} context Context
    * @param {ViewGroup} parentGroup Parent view group
@@ -144,6 +166,25 @@ export abstract class View {
 
     // Initialize z-index
     this.zIndex = parentGroup.getZIndex() + 1;
+  }
+
+  /**
+   * Get view's background color
+   * @returns {MTColor}
+   */
+  getBackgroundColor(): MTColor {
+    return this.backgroundColor;
+  }
+
+  /**
+   * Set view's background color
+   * @param {MTColor} color
+   * @returns {View}
+   */
+  setBackgroundColor(color: MTColor): View {
+    this.backgroundColor = color;
+    this.updateLayout();
+    return this;
   }
 
   /**
@@ -186,14 +227,6 @@ export abstract class View {
   }
 
   /**
-   * Gets z-index of the view on storyboard
-   * @returns {number}
-   */
-  getZIndex(): number {
-    return this.zIndex;
-  }
-
-  /**
    * Set view's height
    * @returns {number}
    */
@@ -207,6 +240,7 @@ export abstract class View {
    */
   setHeight(val: number): View {
     this.height = val;
+    this.layoutParams.height = val;
     return this;
   }
 
@@ -224,7 +258,32 @@ export abstract class View {
    */
   setWidth(val: number): View {
     this.width = val;
+    this.layoutParams.height = val;
     return this;
+  }
+
+  /**
+   * Set z-index
+   * @param {number} index
+   * @param {boolean} dedraw
+   * @returns {View}
+   */
+  setZIndex(index: number, dedraw: boolean = true): View {
+    this.zIndex = index;
+
+    if (dedraw) {
+      this.updateLayout();
+    }
+
+    return this;
+  }
+
+  /**
+   * Gets view's z-index
+   * @returns {number}
+   */
+  getZIndex(): number {
+    return this.zIndex;
   }
 
   /**
@@ -282,6 +341,132 @@ export abstract class View {
    */
   getViewStoryboardBounds(): MTSquare {
     return new MTSquare(this.screenX, this.screenY, this.height, this.width);
+  }
+
+  /**
+   * Set views padding
+   * @param {number} top
+   * @param {number} right
+   * @param {number} bottom
+   * @param {number} left
+   */
+  setPadding(top: number, right: number, bottom: number, left: number) {
+    this.padding = [top, right, bottom, left];
+    this.updateLayout();
+  }
+
+  /**
+   * Get view's padding
+   * @returns {number[]}
+   */
+  getPadding(): MTBox {
+    return MTBox.fromArray(this.padding);
+  }
+
+  /**
+   * Set views margin
+   * @param {number} top
+   * @param {number} right
+   * @param {number} bottom
+   * @param {number} left
+   */
+  setMargin(top: number, right: number, bottom: number, left: number) {
+    this.margin = [top, right, bottom, left];
+    this.updateLayout();
+  }
+
+  /**
+   * Get view's margin
+   * @returns {number[]}
+   */
+  getMargin(): MTBox {
+    return MTBox.fromArray(this.margin);
+  }
+
+  /**
+   * Get view's drawable area including margins
+   * @returns {MTSquare}
+   */
+  getDrawableArea(): MTSquare {
+    const b = this.getViewBounds();
+    const m = this.getMargin();
+
+    return new MTSquare(b.x + m.left, b.y + m.top, b.height - m.bottom, b.width - m.right);
+  }
+
+  /**
+   * Get view's content size
+   * @returns {MTPoint}
+   */
+  getContentSize(): MTPoint {
+    return new MTPoint(this.width, this.height);
+  }
+
+  /**
+   * Callback for layout setup event.
+   * Used to configure view's bounds and layout
+   *
+   * @param {boolean} changed
+   * @param {MTSquare} drawArea
+   */
+  public onLayout(changed: boolean, drawArea: MTSquare) {
+    const hasNoParent = isNil(this.parentGroup);
+    const maxViewBounds = hasNoParent ? this.context.getViewBounds() : this.parentGroup.getViewBounds();
+
+    // Determine view's height
+    switch (this.layoutParams.height) {
+      case LayoutParams.MATCH_PARENT:
+        this.height = maxViewBounds.height;
+        break;
+
+      case LayoutParams.FILL_PARENT:
+        this.height = maxViewBounds.height;
+        break;
+
+      case LayoutParams.WRAP_CONTENT:
+        this.height = this.getContentSize().y;
+        break;
+
+      default:
+        break;
+    }
+
+    // Determine view's height
+    switch (this.layoutParams.width) {
+      case LayoutParams.MATCH_PARENT:
+        this.width = maxViewBounds.width;
+        break;
+
+      case LayoutParams.FILL_PARENT:
+        this.width = maxViewBounds.width;
+        break;
+
+      case LayoutParams.WRAP_CONTENT:
+        this.width = this.getContentSize().x;
+        break;
+
+      default:
+        break;
+    }
+
+
+    this.x = maxViewBounds.x;
+    this.y = maxViewBounds.y;
+
+    const area = this.getDrawableArea();
+
+    this.OnPaint(area);
+  }
+
+  /**
+   * Callback for paint event. Used to render the view
+   * @param {MTSquare} area
+   * @constructor
+   */
+  protected OnPaint(area: MTSquare) {
+    const canvasContext = this.context.getRenderingContext();
+    canvasContext.fillStyle = this.backgroundColor.toString();
+    canvasContext.fillRect(area.x, area.y, area.width, area.height);
   }
 
   private updateLayout() {
