@@ -141,6 +141,9 @@ export abstract class View {
     this.mouseOver = new MTEventEmitter(this);
     this.mouseLeave = new MTEventEmitter(this);
     this.mount = new MTEventEmitter(this);
+
+    // Initialize z-index
+    this.zIndex = parentGroup.getZIndex() + 1;
   }
 
   /**
