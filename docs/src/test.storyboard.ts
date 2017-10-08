@@ -7,6 +7,7 @@ import {TextView} from '../../src/widgets/TextView';
 import {MTColor} from '../../src/foundation/MTColor';
 import {LayoutParams} from '../../src/view/LayoutParams';
 import {Typeface} from '../../src/graphics/Typeface';
+import {Fonts} from '../../src/graphics/Fonts';
 
 /**
  * Application storyboard class
@@ -29,7 +30,7 @@ export class TestStoryboard extends Storyboard {
 
     const text = new TextView(this);
     text.setParentGroup(linearLayout);
-    text.setTypeface(Typeface.SANS_SERIF);
+    text.setTypeface(Fonts.SANS_SERIF);
     text.setTextColor(MTColor.fromHex('#ffffff'));
     text.setTextSize(32);
 
