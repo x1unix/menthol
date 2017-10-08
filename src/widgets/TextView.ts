@@ -9,6 +9,7 @@ import {Gravity} from '../view/Gravity';
 import {MTSquare} from '../foundation/MTSquare';
 import {MTPoint} from '../foundation/MTPoint';
 import {isNil} from 'lodash';
+import {Fonts} from '../graphics/Fonts';
 
 /**
  * A user interface element that displays text to the user.
@@ -31,7 +32,7 @@ export class TextView extends View {
    * Text typeface
    * @type {Typeface}
    */
-  protected typeface: Typeface = Typeface.SANS_SERIF;
+  protected typeface: Typeface = Fonts.SANS_SERIF;
 
   /**
    * Line count

@@ -130,7 +130,7 @@ export class Logger {
    * @param {any[]} [content=[]]
    * @memberof LoggerService
    */
-  private write(level: number, tag: string, message: string, content: any[] = []) {
+  private write(level: number, tag: string, message: string, content: any[]) {
     if ((this.logLevel === LogLevel.ALL) || (level <= this.logLevel)) {
       this.printMessage(level, tag, message, content);
     }
@@ -170,7 +170,7 @@ export class Logger {
         console.error.apply(console, args);
         break;
       case LogLevel.WARN:
-        console.info.apply(console, args);
+        console.warn.apply(console, args);
         break;
       case LogLevel.INFO:
         console.info.apply(console, args);

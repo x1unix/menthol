@@ -8,6 +8,8 @@ import {MTSquare} from '../foundation/MTSquare';
 import {ViewGroup} from './ViewGroup';
 import {MTPoint} from '../foundation/MTPoint';
 import {MTObject} from '../foundation/MTObject';
+import {MentholDebugProvider} from '../debug/MentholDebugProvider';
+import {Menthol} from '../Menthol';
 
 
 /**
@@ -36,6 +38,12 @@ export class Storyboard extends MTObject {
    * @type {boolean}
    */
   protected started: boolean = false;
+
+  /**
+   * Current debug level
+   * @type {number}
+   */
+  protected debugLevel = 0;
 
 
   /**
@@ -104,6 +112,11 @@ export class Storyboard extends MTObject {
     this.renderTarget = canvas;
   }
 
+
+  public setDebugLevel(level: number): Storyboard {
+    this.debugLevel = level;
+    return this;
+  }
   /**
    * Redraw screen
    * @param force
@@ -116,6 +129,7 @@ export class Storyboard extends MTObject {
   public setContentView(element: ViewGroup) {
     // this.mapper.register(element);
     this.rootView = element;
+    this.log.info(this.className, 'Root content view has been changed');
     this.onStart();
   }
 
@@ -155,15 +169,23 @@ export class Storyboard extends MTObject {
   public onStart() {
     this.started = true;
 
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        this.onPause();
-      } else {
-        this.onResume();
-      }
-    });
+    if (this.debugLevel === MentholDebugProvider.DEBUG_CRITICAL) {
+      this.log.warn(this.className, 'Storyboard started at critical debug mode. Render loop will be disabled!');
+      this.onDraw(false);
+    } else {
+      this.log.info(this.className, 'Render loop started');
 
-    this.requestFrame();
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          this.onPause();
+        } else {
+          this.onResume();
+        }
+      });
+
+      this.requestFrame();
+    }
+
   }
 
   protected requestFrame() {
@@ -192,6 +214,7 @@ export class Storyboard extends MTObject {
    */
   public onResume() {
     this.started = true;
+    this.log.info(this.className, 'Render loop resumed');
     this.requestFrame();
   }
 
@@ -200,6 +223,7 @@ export class Storyboard extends MTObject {
    */
   public onPause() {
     this.started = false;
+    this.log.info(this.className, 'Render loop paused');
   }
 
   /**

@@ -8,30 +8,9 @@ export class Typeface {
   /**
    * List of font styles
    */
-  static Style: {
-    MONOSPACE: 'monospace',
-    SANS_SERIF: 'sans-serif',
-    SERIF: 'serif'
-  };
-
-
-  /**
-   * Default serif typeface
-   * @type {Typeface}
-   */
-  static SERIF = new Typeface('Times New Roman, Times, serif', Typeface.Style.SERIF, 400);
-
-  /**
-   * Default sans-serif typeface
-   * @type {Typeface}
-   */
-  static SANS_SERIF = new Typeface('Arial, Helvetica, sans-serif', Typeface.Style.SANS_SERIF, 400);
-
-  /**
-   * Default monospace font
-   * @type {Typeface}
-   */
-  static MONOSPACE = new Typeface('Lucida Console, Monaco, monospace', Typeface.Style.MONOSPACE, 400);
+  static MONOSPACE: 'monospace';
+  static SANS_SERIF: 'sans-serif';
+  static SERIF: 'serif';
 
   /**
    * Create a new typeface
@@ -41,7 +20,7 @@ export class Typeface {
    */
   constructor(
     public fontFamily: string = 'arial',
-    public style: string = Typeface.Style.SANS_SERIF,
+    public style: string = Typeface.SANS_SERIF,
     public weight: number = 400
     ) {}
 
