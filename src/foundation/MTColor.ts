@@ -14,7 +14,7 @@ export class MTColor {
     public red: number = 255,
     public green: number = 255,
     public blue: number = 255,
-    public alpha: number = 0
+    public alpha: number = 255
   ) {}
 
   toHex(): string {
