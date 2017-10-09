@@ -10,6 +10,7 @@ import {MTSquare} from '../foundation/MTSquare';
 import {MTPoint} from '../foundation/MTPoint';
 import {isNil} from 'lodash';
 import {Fonts} from '../graphics/Fonts';
+import {Colors} from '../graphics/Colors';
 
 /**
  * A user interface element that displays text to the user.
@@ -50,7 +51,7 @@ export class TextView extends View {
    * Text color
    * @type {MTColor}
    */
-  protected textColor: MTColor = new MTColor(0, 0, 0);
+  protected textColor: MTColor = Colors.Black;
 
   /**
    * View's max height
