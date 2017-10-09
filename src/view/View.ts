@@ -13,6 +13,7 @@ import {MTColor} from '../foundation/MTColor';
 import {isNil} from 'lodash';
 import {MTBox} from '../foundation/MTBox';
 import {Gravity} from './Gravity';
+import {Colors} from '../graphics/Colors';
 
 /**
  * This class represents the basic building block for user interface components.
@@ -149,7 +150,7 @@ export abstract class View {
    * Set view's background color
    * @type {MTColor}
    */
-  protected backgroundColor: MTColor = new MTColor();
+  protected backgroundColor: MTColor = Colors.Transparent;
 
   /**
    * View position on parent container
