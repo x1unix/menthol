@@ -4,8 +4,9 @@ import {Loggable} from '../helpers/logs/Loggable';
 export class MentholDebugProvider extends Loggable {
   private static instance: MentholDebugProvider = null;
 
-  static DEBUG_CRITICAL = 2;
+  static DEBUG_CRITICAL = 3;
   static DEBUG = 1;
+  static DEBUG_SURFACE = 2;
   static PRODUCTION = 0;
 
   public static getInstance(): MentholDebugProvider {

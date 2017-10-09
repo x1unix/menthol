@@ -45,6 +45,8 @@ export class Storyboard extends MTObject {
    */
   protected debugLevel = 0;
 
+  protected renderLoopEnabled = true;
+
 
   /**
    * Map with UI bindings
@@ -117,6 +119,15 @@ export class Storyboard extends MTObject {
     this.debugLevel = level;
     return this;
   }
+
+  public getDebugLevel(): number {
+    return this.debugLevel;
+  }
+
+  public matchDebugLevel(level: number): boolean {
+    return this.debugLevel <= level;
+  }
+
   /**
    * Redraw screen
    * @param force
@@ -170,8 +181,9 @@ export class Storyboard extends MTObject {
     this.started = true;
 
     if (this.debugLevel === MentholDebugProvider.DEBUG_CRITICAL) {
+      this.renderLoopEnabled = false;
       this.log.warn(this.className, 'Storyboard started at critical debug mode. Render loop will be disabled!');
-      this.onDraw(false);
+      this.onDraw();
     } else {
       this.log.info(this.className, 'Render loop started');
 
@@ -189,24 +201,27 @@ export class Storyboard extends MTObject {
   }
 
   protected requestFrame() {
+    if (!this.renderLoopEnabled) return;
+
     const raf = isFunction(window.requestAnimationFrame) ? window.requestAnimationFrame : window.webkitRequestAnimationFrame;
 
-    raf(() => this.onDraw(true));
+    raf(() => this.onDraw());
   }
 
 
   /**
    * On layout draw hook
-   * @param {boolean} autoRefresh Redraw canvas on each animation frame
    */
-  public onDraw(autoRefresh: boolean = true) {
+  public onDraw() {
     if (!this.started) return;
 
     const size = this.size;
     const area: MTSquare = new MTSquare(0, 0, size.y, size.x);
     this.rootView.onLayout(true, area, true);
 
-    this.requestFrame();
+    if (this.renderLoopEnabled === true) {
+      this.requestFrame();
+    }
   }
 
   /**

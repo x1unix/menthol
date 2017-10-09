@@ -14,6 +14,9 @@ import {isNil} from 'lodash';
 import {MTBox} from '../foundation/MTBox';
 import {Gravity} from './Gravity';
 import {Colors} from '../graphics/Colors';
+import {MentholDebugProvider} from '../debug/MentholDebugProvider';
+import {MTObject} from '../foundation/MTObject';
+import {Fonts} from '../graphics/Fonts';
 
 /**
  * This class represents the basic building block for user interface components.
@@ -24,7 +27,7 @@ import {Colors} from '../graphics/Colors';
  *
  * @ref https://developer.android.com/reference/android/view/View.html
  */
-export abstract class View {
+export abstract class View extends MTObject {
 
   /**
    * This view is invisible, and it doesn't take any space for layout purposes
@@ -171,6 +174,7 @@ export abstract class View {
    * @param {ViewGroup} parentGroup Parent view group
    */
   constructor(public context: Storyboard, protected parentGroup: ViewGroup = null) {
+    super();
     // Initialize events
     this.click = new MTEventEmitter(this);
     this.focusLost = new MTEventEmitter(this);
@@ -544,6 +548,18 @@ export abstract class View {
     if (this.backgroundColor.alpha > 0) {
       canvas.fillStyle = this.backgroundColor.toString();
       canvas.fillRect(area.x, area.y, area.width, area.height);
+    }
+
+    if (this.context.matchDebugLevel(MentholDebugProvider.DEBUG_SURFACE)) {
+      const context = this.context.getRenderingContext();
+      context.fillStyle = Colors.Pink.toString();
+      context.strokeStyle = Colors.Purple.toString();
+      context.lineWidth = 2;
+      context.font = Fonts.SANS_SERIF.toString(10);
+      context.strokeRect(area.x, area.y, area.width, area.height);
+      context.globalCompositeOperation = 'source-over';
+      context.fillText(this.className.toString(), area.x, area.y);
+
     }
   }
 
