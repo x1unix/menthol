@@ -125,7 +125,7 @@ export class Storyboard extends MTObject {
   }
 
   public matchDebugLevel(level: number): boolean {
-    return this.debugLevel <= level;
+    return this.debugLevel >= level;
   }
 
   /**

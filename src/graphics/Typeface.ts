@@ -24,8 +24,8 @@ export class Typeface {
     public weight: number = 400
     ) {}
 
-  toString(fontSizePx: number = 13) {
+  toString(fontSizePx: number = 13, lineHeight = 1.2) {
     // return `${this.weight} ${this.fontFamily}, ${this.style} ${fontSizePx}px ${this.weight}`;
-    return `${this.weight} ${fontSizePx}px ${this.fontFamily}, ${this.style}`;
+    return `${this.weight} ${fontSizePx}px/${lineHeight} ${this.fontFamily}, ${this.style}`;
   }
 }

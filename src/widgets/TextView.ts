@@ -280,7 +280,7 @@ export class TextView extends View {
     canvas = this.context.getRenderingContext();
     canvas.globalCompositeOperation = 'source-over';
     canvas.textAlign = this.getTextAlignment();
-    canvas.font = this.typeface.toString(this.textSize);
+    canvas.font = this.typeface.toString(this.textSize, this.lineHeight);
     canvas.fillStyle = this.textColor.toString();
     canvas.textBaseline = 'top';
 
