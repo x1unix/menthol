@@ -55,10 +55,11 @@ export class ViewGroup extends View {
    * Configures ViewGroup's layout and children's layout
    * @param {boolean} changed
    * @param {MTSquare} drawArea
+   * @param {boolean} drawAfterLayout Draw after layout
    * @param {boolean} drawChildren Draw children after configure
    */
-  public onLayout(changed: boolean, drawArea: MTSquare, drawChildren: boolean = false) {
-    super.onLayout(changed, drawArea);
+  public onLayout(changed: boolean, drawArea: MTSquare, drawAfterLayout = false, drawChildren: boolean = false) {
+    super.onLayout(changed, drawArea, drawAfterLayout);
 
     if (!drawChildren) return;
 

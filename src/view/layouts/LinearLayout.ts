@@ -40,8 +40,8 @@ export class LinearLayout extends ViewGroup {
     return this.orientation;
   }
 
-  public onLayout(changed: boolean, drawArea: MTSquare) {
-    super.onLayout(changed, drawArea);
+  public onLayout(changed: boolean, drawArea: MTSquare, drawAfterLayout = false, drawChildren: boolean = false) {
+    super.onLayout(changed, drawArea, drawAfterLayout, false);
 
     if (
       (this.orientation !== LinearLayout.VERTICAL) &&
@@ -55,11 +55,13 @@ export class LinearLayout extends ViewGroup {
     let nextArea = drawArea;
 
     this.views.forEach((view, index) => {
-      this.drawChildView(view, index, nextArea);
+      view.onLayout(false, nextArea, false);
 
       const layout = view.getLayoutParams();
       const margins = view.getMargin();
       const size = view.getContentSize();
+
+      this.drawChildView(view, index, nextArea);
 
       if (isVertical) {
         nextArea = nextArea.setY(margins.top + margins.bottom + size.y);
@@ -71,6 +73,6 @@ export class LinearLayout extends ViewGroup {
 
   protected drawChildView(view: View, index: number, drawArea: MTSquare) {
 
-    view.onLayout(true, drawArea);
+    view.onDraw(drawArea);
   }
 }

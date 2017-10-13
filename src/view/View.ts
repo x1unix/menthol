@@ -488,8 +488,9 @@ export abstract class View extends MTObject {
    *
    * @param {boolean} changed
    * @param {MTSquare} drawArea
+   * @param {boolean} drawAfterLayout Render view after layout
    */
-  public onLayout(changed: boolean, drawArea: MTSquare) {
+  public onLayout(changed: boolean, drawArea: MTSquare, drawAfterLayout = false) {
     const hasNoParent = isNil(this.parentGroup);
     const maxViewBounds = hasNoParent ? this.context.getViewBounds() : this.parentGroup.getViewBounds();
 
@@ -535,7 +536,10 @@ export abstract class View extends MTObject {
 
     const area = this.getDrawableArea();
     const canvas = this.context.getRenderingContext();
-    this.onDraw(area, canvas);
+
+    if (drawAfterLayout) {
+      this.onDraw(drawArea);
+    }
   }
 
   /**
@@ -544,19 +548,26 @@ export abstract class View extends MTObject {
    * @param {CanvasRenderingContext2D} canvas Canvas rendering context
    * @constructor
    */
-  protected onDraw(area: MTSquare, canvas: CanvasRenderingContext2D) {
+  public onDraw(area: MTSquare, canvas: CanvasRenderingContext2D = null) {
+
+    const drawableArea = this.getDrawableArea();
+
+    if (isNil(canvas)) {
+      canvas = this.context.getRenderingContext();
+    }
+
     if (this.backgroundColor.alpha > 0) {
       canvas.fillStyle = this.backgroundColor.toString();
-      canvas.fillRect(area.x, area.y, area.width, area.height);
+      canvas.fillRect(area.x, area.y, drawableArea.width, drawableArea.height);
     }
 
     if (this.context.matchDebugLevel(MentholDebugProvider.DEBUG_SURFACE)) {
       const context = this.context.getRenderingContext();
-      context.fillStyle = Colors.Pink.toString();
+      context.fillStyle = Colors.Purple.toString();
       context.strokeStyle = Colors.Purple.toString();
       context.lineWidth = 2;
       context.font = Fonts.SANS_SERIF.toString(10);
-      context.strokeRect(area.x, area.y, area.width, area.height);
+      context.strokeRect(area.x, area.y, drawableArea.width, drawableArea.height);
       context.fillText(this.className.toString(), area.x, area.y);
       canvas.textBaseline = 'top';
 

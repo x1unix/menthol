@@ -259,8 +259,9 @@ export class TextView extends View {
    * @override
    * @param {boolean} changed
    * @param {MTSquare} drawArea
+   * @param {boolean} drawAfterLayout
    */
-  public onLayout(changed: boolean, drawArea: MTSquare) {
+  public onLayout(changed: boolean, drawArea: MTSquare, drawAfterLayout = false) {
     const canvas = this.context.getRenderingContext();
     canvas.textAlign = this.getTextAlignment();
     canvas.font = this.typeface.toString(this.textSize);
@@ -270,15 +271,13 @@ export class TextView extends View {
       this.textSize * this.lineHeight
     );
 
-    super.onLayout(changed, drawArea);
+    super.onLayout(changed, drawArea, drawAfterLayout);
   }
 
 
   public onDraw(area: MTSquare, canvas: CanvasRenderingContext2D) {
     super.onDraw(area, canvas);
-
     canvas = this.context.getRenderingContext();
-
     canvas.globalCompositeOperation = 'source-over';
     canvas.textAlign = this.getTextAlignment();
     canvas.font = this.typeface.toString(this.textSize);

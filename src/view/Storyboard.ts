@@ -217,7 +217,7 @@ export class Storyboard extends MTObject {
 
     const size = this.size;
     const area: MTSquare = new MTSquare(0, 0, size.y, size.x);
-    this.rootView.onLayout(true, area, true);
+    this.rootView.onLayout(true, area, true, true);
 
     if (this.renderLoopEnabled === true) {
       this.requestFrame();
