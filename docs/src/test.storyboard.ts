@@ -37,7 +37,16 @@ export class TestStoryboard extends Storyboard {
     text.setTextSize(32);
     text.setText('Lorem Ipsum');
 
+    const i = new TextView(this);
+    i.setParentGroup(linearLayout);
+    i.setTypeface(Fonts.MONOSPACE);
+    i.setTextColor(Colors.White);
+    i.setBackgroundColor(Colors.Black);
+    i.setTextSize(14);
+    i.setText('foofoobar');
+
     linearLayout.addView(text);
+    linearLayout.addView(i);
     this.setContentView(linearLayout);
   }
 
