@@ -277,17 +277,21 @@ export class TextView extends View {
   public onDraw(area: MTSquare, canvas: CanvasRenderingContext2D) {
     super.onDraw(area, canvas);
 
+    canvas = this.context.getRenderingContext();
+
+    canvas.globalCompositeOperation = 'source-over';
     canvas.textAlign = this.getTextAlignment();
     canvas.font = this.typeface.toString(this.textSize);
     canvas.fillStyle = this.textColor.toString();
+    canvas.textBaseline = 'top';
 
-    if (!isNil(this.maxWidth)) {
+    if (isNil(this.maxWidth)) {
       this.maxWidth = area.width;
     }
 
     const position = this.getContentDrawPosition(area, this.getContentSize());
 
-    canvas.fillText(this.text, position.x, position.y, this.maxWidth);
+    canvas.fillText(this.text, Math.floor(position.x), Math.floor(position.y), Math.floor(this.maxWidth));
   }
 
 

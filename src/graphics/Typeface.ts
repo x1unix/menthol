@@ -20,11 +20,12 @@ export class Typeface {
    */
   constructor(
     public fontFamily: string = 'arial',
-    public style: string = Typeface.SANS_SERIF,
+    public style: string = 'sans-serif',
     public weight: number = 400
     ) {}
 
   toString(fontSizePx: number = 13) {
-    return `${this.weight} ${this.style} ${fontSizePx} ${this.weight}`;
+    // return `${this.weight} ${this.fontFamily}, ${this.style} ${fontSizePx}px ${this.weight}`;
+    return `${this.weight} ${fontSizePx}px ${this.fontFamily}, ${this.style}`;
   }
 }

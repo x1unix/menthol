@@ -557,8 +557,8 @@ export abstract class View extends MTObject {
       context.lineWidth = 2;
       context.font = Fonts.SANS_SERIF.toString(10);
       context.strokeRect(area.x, area.y, area.width, area.height);
-      context.globalCompositeOperation = 'source-over';
       context.fillText(this.className.toString(), area.x, area.y);
+      canvas.textBaseline = 'top';
 
     }
   }

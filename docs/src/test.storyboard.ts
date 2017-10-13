@@ -8,6 +8,7 @@ import {MTColor} from '../../src/foundation/MTColor';
 import {LayoutParams} from '../../src/view/LayoutParams';
 import {Typeface} from '../../src/graphics/Typeface';
 import {Fonts} from '../../src/graphics/Fonts';
+import {Colors} from '../../src/graphics/Colors';
 
 /**
  * Application storyboard class
@@ -19,7 +20,7 @@ export class TestStoryboard extends Storyboard {
 
     const linearLayout = new LinearLayout(this);
     linearLayout.setOrientation(LinearLayout.VERTICAL);
-    linearLayout.setBackgroundColor(MTColor.fromHex('#0094FF'));
+    linearLayout.setBackgroundColor(Colors.LightGray);
 
     const layoutParams = new LayoutParams();
     layoutParams.width = LayoutParams.FILL_PARENT;
@@ -31,8 +32,10 @@ export class TestStoryboard extends Storyboard {
     const text = new TextView(this);
     text.setParentGroup(linearLayout);
     text.setTypeface(Fonts.SANS_SERIF);
-    text.setTextColor(MTColor.fromHex('#ffffff'));
+    text.setTextColor(Colors.Black);
+    text.setBackgroundColor(Colors.Red);
     text.setTextSize(32);
+    text.setText('Lorem Ipsum');
 
     linearLayout.addView(text);
     this.setContentView(linearLayout);

@@ -6,4 +6,4 @@ import {Menthol} from '../../src/Menthol';
 const canvas = <HTMLCanvasElement> document.querySelector('canvas#storyboard');
 
 // Bootstrap application using storyboard
-Menthol.bootstrapViewDebug(canvas, TestStoryboard, true);
+Menthol.bootstrapViewDebug(canvas, TestStoryboard, false);
